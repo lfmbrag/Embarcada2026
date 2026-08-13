@@ -1,0 +1,173 @@
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("anamnese-form");
+  const status = document.getElementById("form-status");
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  initConsultaPaciente("numeroAtendimento");
+
+  function ligarCondicional(nomeGrupo, valoresQueMostram, wrapperId, campoParaLimparIds) {
+    const wrapper = document.getElementById(wrapperId);
+    const radios = document.querySelectorAll('input[name="' + nomeGrupo + '"]');
+    function atualizar() {
+      const selecionado = document.querySelector('input[name="' + nomeGrupo + '"]:checked');
+      const mostrar = selecionado && valoresQueMostram.includes(selecionado.value);
+      wrapper.classList.toggle("hidden", !mostrar);
+      if (!mostrar && campoParaLimparIds) {
+        campoParaLimparIds.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+      }
+    }
+    radios.forEach((r) => r.addEventListener("change", atualizar));
+    return atualizar;
+  }
+
+  const resets = [];
+
+  resets.push(ligarCondicional("cancer", ["Sim"], "cancer-detalhes-wrapper"));
+  resets.push(ligarCondicional("medicacaoContinua", ["Sim"], "medicamento-wrapper", ["medicamentoContinuo"]));
+  resets.push(ligarCondicional("alergiaMedicamento", ["Sim"], "alergia-wrapper", ["qualAlergia"]));
+  resets.push(ligarCondicional("tabagismo", ["Sim"], "carga-tabagica-wrapper", ["cargaTabagica"]));
+  resets.push(ligarCondicional("outraSubstancia", ["Sim"], "substancia-wrapper", ["qualSubstancia"]));
+  resets.push(ligarCondicional("tratamentoAgua", ["Sim"], "como-tratamento-wrapper", ["comoTratamento"]));
+
+  resets.forEach((fn) => fn());
+
+  const doencaOutroCheckbox = document.getElementById("doenca-outro");
+  const doencaOutroWrapper = document.getElementById("doenca-outro-wrapper");
+  doencaOutroCheckbox.addEventListener("change", () => {
+    doencaOutroWrapper.classList.toggle("hidden", !doencaOutroCheckbox.checked);
+    if (!doencaOutroCheckbox.checked) document.getElementById("doenca-outro-texto").value = "";
+  });
+
+  const condutaOutroCheckbox = document.getElementById("conduta-outro");
+  const condutaOutroWrapper = document.getElementById("conduta-outro-wrapper");
+  condutaOutroCheckbox.addEventListener("change", () => {
+    condutaOutroWrapper.classList.toggle("hidden", !condutaOutroCheckbox.checked);
+    if (!condutaOutroCheckbox.checked) document.getElementById("conduta-outro-texto").value = "";
+  });
+
+  const fonteAguaSelect = document.getElementById("fonteAgua");
+  const fonteAguaOutroWrapper = document.getElementById("fonte-agua-outro-wrapper");
+  fonteAguaSelect.addEventListener("change", () => {
+    const mostrar = fonteAguaSelect.value === "Outro";
+    fonteAguaOutroWrapper.classList.toggle("hidden", !mostrar);
+    if (!mostrar) document.getElementById("fonte-agua-outro-texto").value = "";
+  });
+
+  const comoTratamentoSelect = document.getElementById("comoTratamento");
+  const comoTratamentoOutroWrapper = document.getElementById("como-tratamento-outro-wrapper");
+  comoTratamentoSelect.addEventListener("change", () => {
+    const mostrar = comoTratamentoSelect.value === "Outro";
+    comoTratamentoOutroWrapper.classList.toggle("hidden", !mostrar);
+    if (!mostrar) document.getElementById("como-tratamento-outro-texto").value = "";
+  });
+
+  const destinoLixoSelect = document.getElementById("destinoLixo");
+  const destinoLixoOutroWrapper = document.getElementById("destino-lixo-outro-wrapper");
+  destinoLixoSelect.addEventListener("change", () => {
+    const mostrar = destinoLixoSelect.value === "Outro";
+    destinoLixoOutroWrapper.classList.toggle("hidden", !mostrar);
+    if (!mostrar) document.getElementById("destino-lixo-outro-texto").value = "";
+  });
+
+  const historicoCheckboxes = document.querySelectorAll('input[name="historico12meses"]');
+  const historicoNenhuma = document.getElementById("hist-nenhuma");
+  historicoCheckboxes.forEach((cb) => {
+    cb.addEventListener("change", () => {
+      if (cb === historicoNenhuma && cb.checked) {
+        historicoCheckboxes.forEach((outro) => {
+          if (outro !== historicoNenhuma) outro.checked = false;
+        });
+      } else if (cb !== historicoNenhuma && cb.checked) {
+        historicoNenhuma.checked = false;
+      }
+    });
+  });
+
+  const numericFields = ["numeroAtendimento"];
+  numericFields.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("keydown", (e) => {
+      const allowed = ["Backspace", "Delete", "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+      const isNumber = /^[0-9]$/.test(e.key);
+      const isShortcut = e.ctrlKey || e.metaKey;
+      if (!isNumber && !allowed.includes(e.key) && !isShortcut) {
+        e.preventDefault();
+      }
+    });
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    status.textContent = "";
+    status.className = "form-status";
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      status.textContent = "Verifique os campos destacados antes de continuar.";
+      status.classList.add("error");
+      return;
+    }
+
+    const dadosForm = new FormData(form);
+    const doencas = dadosForm.getAll("doencas").join(", ");
+    const historico12meses = dadosForm.getAll("historico12meses").join(", ");
+    const conduta = dadosForm.getAll("conduta").join(", ");
+
+    const registro = Object.fromEntries(dadosForm.entries());
+    registro.doencas = doencas;
+    registro.historico12meses = historico12meses;
+    registro.conduta = conduta;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Salvando...";
+    status.textContent = "Enviando para a planilha...";
+    status.classList.remove("error", "success");
+
+    google.script.run
+      .withSuccessHandler((resposta) => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Registrar anamnese";
+
+        if (resposta && resposta.sucesso) {
+          status.textContent = "Anamnese registrada na planilha com sucesso!";
+          status.classList.add("success");
+          form.reset();
+          resets.forEach((fn) => fn());
+          doencaOutroWrapper.classList.add("hidden");
+          condutaOutroWrapper.classList.add("hidden");
+          fonteAguaOutroWrapper.classList.add("hidden");
+          comoTratamentoOutroWrapper.classList.add("hidden");
+          destinoLixoOutroWrapper.classList.add("hidden");
+        } else {
+          status.textContent = "Erro ao salvar: " + (resposta && resposta.erro ? resposta.erro : "tente novamente.");
+          status.classList.add("error");
+        }
+      })
+      .withFailureHandler((erro) => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Registrar anamnese";
+        status.textContent = "Erro ao salvar: " + erro.message;
+        status.classList.add("error");
+      })
+      .registrarAnamnese(registro);
+  });
+
+  form.addEventListener("reset", () => {
+    setTimeout(() => {
+      status.textContent = "";
+      status.className = "form-status";
+      resets.forEach((fn) => fn());
+      doencaOutroWrapper.classList.add("hidden");
+      condutaOutroWrapper.classList.add("hidden");
+      fonteAguaOutroWrapper.classList.add("hidden");
+      comoTratamentoOutroWrapper.classList.add("hidden");
+      destinoLixoOutroWrapper.classList.add("hidden");
+    }, 0);
+  });
+});
+</script>
