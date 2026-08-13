@@ -1,0 +1,160 @@
+​​​​<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("fisio-form");
+  const status = document.getElementById("form-status");
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  initConsultaPaciente("numeroAtendimento");
+
+  const escalaDor = document.getElementById("escalaDor");
+  const escalaDorValor = document.getElementById("escalaDor-valor");
+  escalaDor.addEventListener("input", () => {
+    escalaDorValor.textContent = escalaDor.value;
+  });
+
+  function ligarOutroSelect(selectId, wrapperId, textoId) {
+    const select = document.getElementById(selectId);
+    const wrapper = document.getElementById(wrapperId);
+    function atualizar() {
+      const mostrar = select.value === "Outro";
+      wrapper.classList.toggle("hidden", !mostrar);
+      if (!mostrar) document.getElementById(textoId).value = "";
+    }
+    select.addEventListener("change", atualizar);
+    return atualizar;
+  }
+
+  function ligarOutroCheckbox(checkboxId, wrapperId, textoId) {
+    const checkbox = document.getElementById(checkboxId);
+    const wrapper = document.getElementById(wrapperId);
+    function atualizar() {
+      wrapper.classList.toggle("hidden", !checkbox.checked);
+      if (!checkbox.checked) document.getElementById(textoId).value = "";
+    }
+    checkbox.addEventListener("change", atualizar);
+    return atualizar;
+  }
+
+  function ligarCondicionalRadio(nomeGrupo, valoresQueMostram, wrapperId, campoParaLimparIds) {
+    const wrapper = document.getElementById(wrapperId);
+    const radios = document.querySelectorAll('input[name="' + nomeGrupo + '"]');
+    function atualizar() {
+      const selecionado = document.querySelector('input[name="' + nomeGrupo + '"]:checked');
+      const mostrar = selecionado && valoresQueMostram.includes(selecionado.value);
+      wrapper.classList.toggle("hidden", !mostrar);
+      if (!mostrar && campoParaLimparIds) {
+        campoParaLimparIds.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+      }
+    }
+    radios.forEach((r) => r.addEventListener("change", atualizar));
+    return atualizar;
+  }
+
+  const resets = [];
+
+  resets.push(ligarOutroCheckbox("trab-outro", "trabalho-outro-wrapper", "trabalho-outro-texto"));
+  resets.push(ligarOutroCheckbox("carac-outro", "caracteristica-outro-wrapper", "caracteristica-outro-texto"));
+  resets.push(ligarOutroCheckbox("local-outro", "local-outro-wrapper", "local-outro-texto"));
+  resets.push(ligarOutroCheckbox("cond-outro", "conduta-outro-wrapper", "conduta-outro-texto"));
+  resets.push(ligarOutroCheckbox("enc-outro", "encaminhamento-outro-wrapper", "encaminhamento-outro-texto"));
+  resets.push(ligarOutroCheckbox("orient-outro", "orientacoes-outro-wrapper", "orientacoes-outro-texto"));
+
+  resets.push(ligarOutroSelect("transporte", "transporte-outro-wrapper", "transporte-outro-texto"));
+  resets.push(ligarOutroCheckbox("motivo-outro", "motivo-outro-wrapper", "motivo-outro-texto"));
+  resets.push(ligarOutroCheckbox("piora-outro", "piora-outro-wrapper", "piora-outro-texto"));
+  resets.push(ligarOutroCheckbox("melhora-outro", "melhora-outro-wrapper", "melhora-outro-texto"));
+  resets.push(ligarOutroSelect("postura", "postura-outro-wrapper", "postura-outro-texto"));
+  resets.push(ligarOutroSelect("marcha", "marcha-outro-wrapper", "marcha-outro-texto"));
+  resets.push(ligarOutroSelect("dorImpede", "dorimpede-outro-wrapper", "dorimpede-outro-texto"));
+
+  resets.push(ligarCondicionalRadio("edema", ["Sim"], "edema-local-wrapper", ["localEdema"]));
+
+  resets.forEach((fn) => fn());
+
+  const el = document.getElementById("numeroAtendimento");
+  if (el) {
+    el.addEventListener("keydown", (e) => {
+      const allowed = ["Backspace", "Delete", "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+      const isNumber = /^[0-9]$/.test(e.key);
+      const isShortcut = e.ctrlKey || e.metaKey;
+      if (!isNumber && !allowed.includes(e.key) && !isShortcut) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  const camposMultiplaEscolha = [
+    "trabalhoExige",
+    "motivoAtendimento",
+    "pioraCom",
+    "melhoraCom",
+    "caracteristicasDor",
+    "localDor",
+    "condutaRealizada",
+    "encaminhamento",
+    "orientacoesDomiciliares"
+  ];
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    status.textContent = "";
+    status.className = "form-status";
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      status.textContent = "Verifique os campos destacados antes de continuar.";
+      status.classList.add("error");
+      return;
+    }
+
+    const dadosForm = new FormData(form);
+    const registro = Object.fromEntries(dadosForm.entries());
+
+    camposMultiplaEscolha.forEach((nome) => {
+      registro[nome] = dadosForm.getAll(nome).join(", ");
+    });
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Salvando...";
+    status.textContent = "Enviando para a planilha...";
+    status.classList.remove("error", "success");
+
+    google.script.run
+      .withSuccessHandler((resposta) => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Registrar fisioterapia";
+
+        if (resposta && resposta.sucesso) {
+          status.textContent = "Atendimento de fisioterapia registrado com sucesso!";
+          status.classList.add("success");
+          form.reset();
+          resets.forEach((fn) => fn());
+          escalaDorValor.textContent = "0";
+        } else {
+          status.textContent = "Erro ao salvar: " + (resposta && resposta.erro ? resposta.erro : "tente novamente.");
+          status.classList.add("error");
+        }
+      })
+      .withFailureHandler((erro) => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Registrar fisioterapia";
+        status.textContent = "Erro ao salvar: " + erro.message;
+        status.classList.add("error");
+      })
+      .registrarFisioterapia(registro);
+  });
+
+  form.addEventListener("reset", () => {
+    setTimeout(() => {
+      status.textContent = "";
+      status.className = "form-status";
+      resets.forEach((fn) => fn());
+      escalaDorValor.textContent = "0";
+    }, 0);
+  });
+});
+</script>
+
