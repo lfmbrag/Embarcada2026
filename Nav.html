@@ -1,0 +1,27 @@
+<nav class="top-nav">
+  <div class="top-nav-inner">
+    <a href="<?= baseUrl ?>?page=inicio" data-page="inicio" target="_blank" rel="noopener">Início</a>
+    <a href="<?= baseUrl ?>?page=triagem" data-page="triagem" target="_blank" rel="noopener">Triagem</a>
+    <a href="<?= baseUrl ?>?page=exames" data-page="exames" target="_blank" rel="noopener">Exames</a>
+    <a href="<?= baseUrl ?>?page=anamnese" data-page="anamnese" target="_blank" rel="noopener">Consulta</a>
+    <a href="<?= baseUrl ?>?page=fisioterapia" data-page="fisioterapia" target="_blank" rel="noopener">Fisioterapia</a>
+    <a href="<?= baseUrl ?>?page=consulta" data-page="consulta" target="_blank" rel="noopener">Buscar paciente</a>
+  </div>
+</nav>
+<script>
+  (function () {
+    // Destaca o link da página atual, lendo o parâmetro ?page= da URL
+    var params = new URLSearchParams(window.location.search);
+    var paginaAtual = params.get("page") || "inicio";
+    document.querySelectorAll(".top-nav a[data-page]").forEach(function (link) {
+      if (link.getAttribute("data-page") === paginaAtual) {
+        link.classList.add("active");
+      }
+    });
+    // Links abrem em nova guia (target="_blank" definido no HTML). Isso é
+    // proposital: navegar "no mesmo lugar" dentro do iframe interno do
+    // Apps Script esbarra em bloqueio de cookies de terceiros em vários
+    // navegadores, mostrando erro de acesso. Abrindo em nova guia, a
+    // página carrega como acesso direto, sem esse bloqueio.
+  })();
+</script>
