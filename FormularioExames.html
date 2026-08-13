@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha de Exames</title>
+  <?!= include('Stylesheet'); ?>
+</head>
+<body>
+
+  <?!= include('Nav', {baseUrl: baseUrl}); ?>
+
+  <div class="page">
+    <header class="page-header">
+      <div class="header-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="30" height="30">
+          <path d="M17 4h14 M20 4v9l-9 21a4 4 0 0 0 4 6h18a4 4 0 0 0 4-6l-9-21V4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+          <path d="M15 30h18" stroke="currentColor" stroke-width="2.4"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <p class="eyebrow">Laboratório — Atenção Primária Itinerante</p>
+        <h1>Ficha de Exames</h1>
+        <p class="subtitle">Os dados são salvos na aba "Exames" da planilha</p>
+      </div>
+    </header>
+
+    <form id="exames-form" novalidate>
+
+      <!-- SEÇÃO 1 -->
+      <fieldset class="section">
+        <legend><span class="section-index">01</span> Identificação do atendimento</legend>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="numeroAtendimento">Número do atendimento</label>
+            <input type="number" id="numeroAtendimento" name="numeroAtendimento" min="0" inputmode="numeric" placeholder="Nº do atendimento" required>
+          </div>
+
+          <div class="field">
+            <label for="medico">Médico que solicitou exames</label>
+            <select id="medico" name="medico" required>
+              <option value="" disabled selected>Selecione</option>
+              <option>Almiro</option>
+              <option>Bruna</option>
+              <option>Ana</option>
+              <option>Laura</option>
+              <option>Marinha</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Preenchidos automaticamente a partir da Triagem pelo painel de consulta abaixo -->
+        <input type="hidden" id="tipoAtendimento" name="tipoAtendimento">
+        <input type="hidden" id="nome" name="nome">
+      </fieldset>
+
+      <?!= include('ConsultaPaciente', {categoriaAtual: 'exames'}); ?>
+
+      <!-- SEÇÃO 2 -->
+      <fieldset class="section">
+        <legend><span class="section-index">02</span> Exames solicitados
+          <span class="section-hint">as seções abaixo se ajustam conforme a seleção</span>
+        </legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Exames solicitados</label>
+            <div class="checkbox-group" id="exames-checkboxes">
+              <input type="checkbox" id="ex-hemograma" name="examesSolicitados" value="Hemograma">
+              <label for="ex-hemograma">Hemograma</label>
+
+              <input type="checkbox" id="ex-hiv" name="examesSolicitados" value="Teste Rápido HIV">
+              <label for="ex-hiv">Teste Rápido HIV</label>
+
+              <input type="checkbox" id="ex-sifilis" name="examesSolicitados" value="Teste Rápido - Sífilis">
+              <label for="ex-sifilis">Teste Rápido - Sífilis</label>
+
+              <input type="checkbox" id="ex-hepb" name="examesSolicitados" value="Teste Rápido - Hepatite B">
+              <label for="ex-hepb">Teste Rápido - Hepatite B</label>
+
+              <input type="checkbox" id="ex-hepc" name="examesSolicitados" value="Teste Rápido - Hepatite C">
+              <label for="ex-hepc">Teste Rápido - Hepatite C</label>
+
+              <input type="checkbox" id="ex-equ" name="examesSolicitados" value="EQU">
+              <label for="ex-equ">EQU</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Material de análise</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="mat-sangue" name="materialAnalise" value="Sangue total">
+              <label for="mat-sangue">Sangue total</label>
+
+              <input type="checkbox" id="mat-soro" name="materialAnalise" value="Soro">
+              <label for="mat-soro">Soro</label>
+
+              <input type="checkbox" id="mat-urina" name="materialAnalise" value="Urina">
+              <label for="mat-urina">Urina</label>
+
+              <input type="checkbox" id="mat-colo" name="materialAnalise" value="Colo uterino">
+              <label for="mat-colo">Colo uterino</label>
+
+              <input type="checkbox" id="mat-outro" name="materialAnalise" value="Outro">
+              <label for="mat-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="mat-outro-wrapper">
+              <input type="text" id="mat-outro-texto" name="materialAnaliseOutro" placeholder="Qual outro material?">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 3 — TESTES RÁPIDOS -->
+      <fieldset class="section hidden" id="secao-sorologia">
+        <legend><span class="section-index">03</span> Testes rápidos</legend>
+
+        <div class="grid grid-2">
+          <div class="field" id="campo-hiv">
+            <label>HIV</label>
+            <div class="segmented" role="radiogroup" aria-label="Resultado HIV">
+              <input type="radio" id="hiv-reagente" name="hiv" value="Reagente">
+              <label for="hiv-reagente">Reagente</label>
+              <input type="radio" id="hiv-naoreagente" name="hiv" value="Não reagente">
+              <label for="hiv-naoreagente">Não reagente</label>
+              <input type="radio" id="hiv-invalido" name="hiv" value="Inválido">
+              <label for="hiv-invalido">Inválido</label>
+            </div>
+          </div>
+
+          <div class="field" id="campo-sifilis">
+            <label>Sífilis</label>
+            <div class="segmented" role="radiogroup" aria-label="Resultado Sífilis">
+              <input type="radio" id="sifilis-reagente" name="sifilis" value="Reagente">
+              <label for="sifilis-reagente">Reagente</label>
+              <input type="radio" id="sifilis-naoreagente" name="sifilis" value="Não reagente">
+              <label for="sifilis-naoreagente">Não reagente</label>
+              <input type="radio" id="sifilis-invalido" name="sifilis" value="Inválido">
+              <label for="sifilis-invalido">Inválido</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field" id="campo-hepb">
+            <label>Hepatite B (HBsAG)</label>
+            <div class="segmented" role="radiogroup" aria-label="Resultado Hepatite B">
+              <input type="radio" id="hepb-reagente" name="hepatiteB" value="Reagente">
+              <label for="hepb-reagente">Reagente</label>
+              <input type="radio" id="hepb-naoreagente" name="hepatiteB" value="Não reagente">
+              <label for="hepb-naoreagente">Não reagente</label>
+              <input type="radio" id="hepb-invalido" name="hepatiteB" value="Inválido">
+              <label for="hepb-invalido">Inválido</label>
+            </div>
+          </div>
+
+          <div class="field" id="campo-hepc">
+            <label>Hepatite C (Anti-HCV)</label>
+            <div class="segmented" role="radiogroup" aria-label="Resultado Hepatite C">
+              <input type="radio" id="hepc-reagente" name="hepatiteC" value="Reagente">
+              <label for="hepc-reagente">Reagente</label>
+              <input type="radio" id="hepc-naoreagente" name="hepatiteC" value="Não reagente">
+              <label for="hepc-naoreagente">Não reagente</label>
+              <input type="radio" id="hepc-invalido" name="hepatiteC" value="Inválido">
+              <label for="hepc-invalido">Inválido</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 4 — HEMOGRAMA -->
+      <fieldset class="section hidden" id="secao-hemograma">
+        <legend><span class="section-index">04</span> Hemograma</legend>
+
+        <p class="subsection-title">Série vermelha</p>
+        <div class="grid grid-3">
+          <div class="field">
+            <label for="hemacias">Hemácias <span class="unit">(milhões/µL)</span></label>
+            <input type="number" id="hemacias" name="hemacias" step="0.01" min="0" inputmode="decimal" placeholder="0,00">
+          </div>
+          <div class="field">
+            <label for="hemoglobina">Hemoglobina <span class="unit">(g/dL)</span></label>
+            <input type="number" id="hemoglobina" name="hemoglobina" step="0.1" min="0" inputmode="decimal" placeholder="0,0">
+          </div>
+          <div class="field">
+            <label for="hematocrito">Hematócrito <span class="unit">(%)</span></label>
+            <input type="number" id="hematocrito" name="hematocrito" step="0.1" min="0" max="100" inputmode="decimal" placeholder="%">
+          </div>
+        </div>
+
+        <div class="grid grid-4">
+          <div class="field">
+            <label for="vcm">VCM <span class="unit">(fL)</span></label>
+            <input type="number" id="vcm" name="vcm" step="0.1" min="0" inputmode="decimal" placeholder="fL">
+          </div>
+          <div class="field">
+            <label for="hcm">HCM <span class="unit">(pg)</span></label>
+            <input type="number" id="hcm" name="hcm" step="0.1" min="0" inputmode="decimal" placeholder="pg">
+          </div>
+          <div class="field">
+            <label for="chcm">CHCM <span class="unit">(g/dL)</span></label>
+            <input type="number" id="chcm" name="chcm" step="0.1" min="0" inputmode="decimal" placeholder="g/dL">
+          </div>
+          <div class="field">
+            <label for="rdw">RDW <span class="unit">(%)</span></label>
+            <input type="number" id="rdw" name="rdw" step="0.1" min="0" max="100" inputmode="decimal" placeholder="%">
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Morfologia das hemácias</label>
+            <div class="segmented" role="radiogroup" aria-label="Morfologia das hemácias">
+              <input type="radio" id="morfologia-normal" name="morfologiaHemacias" value="Normal">
+              <label for="morfologia-normal">Normal</label>
+              <input type="radio" id="morfologia-outro" name="morfologiaHemacias" value="Outro">
+              <label for="morfologia-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="morfologia-outro-wrapper">
+              <input type="text" id="morfologia-outro-texto" name="morfologiaHemaciasOutro" placeholder="Descreva a alteração observada">
+            </div>
+          </div>
+        </div>
+
+        <p class="subsection-title">Série branca</p>
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="leucocitosTotais">Leucócitos totais</label>
+            <input type="number" id="leucocitosTotais" name="leucocitosTotais" min="0" inputmode="numeric" placeholder="células/mm³">
+          </div>
+        </div>
+
+        <p class="subsection-title">Diferencial</p>
+        <div class="grid grid-5">
+          <div class="field">
+            <label for="neutrofilos">Neutrófilos <span class="unit">(%)</span></label>
+            <input type="number" id="neutrofilos" name="neutrofilos" step="0.1" min="0" max="100" inputmode="decimal" placeholder="%">
+          </div>
+          <div class="field">
+            <label for="linfocitos">Linfócitos <span class="unit">(%)</span></label>
+            <input type="number" id="linfocitos" name="linfocitos" step="0.1" min="0" max="100" inputmode="decimal" placeholder="%">
+          </div>
+          <div class="field">
+            <label for="monocitos">Monócitos <span class="unit">(%)</span></label>
+            <input type="number" id="monocitos" name="monocitos" step="0.1" min="0" max="100" inputmode="decimal" placeholder="%">
+          </div>
+          <div class="field">
+            <label for="eosinofilos">Eosinófilos <span class="unit">(%)</span></label>
+            <input type="number" id="eosinofilos" name="eosinofilos" step="0.1" min="0" max="100" inputmode="decimal" placeholder="%">
+          </div>
+          <div class="field">
+            <label for="basofilos">Basófilos <span class="unit">(%)</span></label>
+            <input type="number" id="basofilos" name="basofilos" step="0.1" min="0" max="100" inputmode="decimal" placeholder="%">
+          </div>
+        </div>
+
+        <p class="subsection-title">Plaquetas</p>
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="plaquetas">Plaquetas</label>
+            <input type="number" id="plaquetas" name="plaquetas" min="0" inputmode="numeric" placeholder="/mm³">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 5 — EQU -->
+      <fieldset class="section hidden" id="secao-equ">
+        <legend><span class="section-index">05</span> EQU (Elementos e Sedimentos da Urina)</legend>
+
+        <p class="subsection-title">Exame físico</p>
+        <div class="grid grid-3">
+          <div class="field">
+            <label for="aspectoEqu">Aspecto</label>
+            <select id="aspectoEqu" name="aspectoEqu">
+              <option value="" disabled selected>Selecione</option>
+              <option>Límpido</option>
+              <option>Levemente Turvo</option>
+              <option>Turvo</option>
+              <option>Muito turvo</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="corEqu">Cor</label>
+            <select id="corEqu" name="corEqu">
+              <option value="" disabled selected>Selecione</option>
+              <option>Amarelo-claro</option>
+              <option>Amarelo</option>
+              <option>Amarelo-escuro</option>
+              <option>Âmbar</option>
+              <option>Avermelhado</option>
+              <option>Esverdeado</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="cor-outro-wrapper">
+              <input type="text" id="cor-outro-texto" name="corEquOutro" placeholder="Descreva a cor observada">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="ph">pH</label>
+            <select id="ph" name="ph">
+              <option value="" disabled selected>Selecione</option>
+              <option>Ácido &lt; 6</option>
+              <option>Normal 6 - 7,5</option>
+              <option>Alcalino &gt; 7,5</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="subsection-title">Exame químico (fitas reagentes)</p>
+        <div class="grid grid-3">
+          <div class="field">
+            <label for="densidade">Densidade</label>
+            <select id="densidade" name="densidade">
+              <option value="" disabled selected>Selecione</option>
+              <option>Baixa (&lt;1.010)</option>
+              <option>Normal (1.010 - 1.025)</option>
+              <option>Elevada (&gt;1.025)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="proteinas">Proteínas</label>
+            <select id="proteinas" name="proteinas">
+              <option value="" disabled selected>Selecione</option>
+              <option>Negativo</option>
+              <option>Traços</option>
+              <option>+</option>
+              <option>++</option>
+              <option>+++</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="glicoseEqu">Glicose</label>
+            <select id="glicoseEqu" name="glicoseEqu">
+              <option value="" disabled selected>Selecione</option>
+              <option>Negativo</option>
+              <option>Traços</option>
+              <option>+</option>
+              <option>++</option>
+              <option>+++</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-3">
+          <div class="field">
+            <label for="corposCetonicos">Corpos cetônicos</label>
+            <select id="corposCetonicos" name="corposCetonicos">
+              <option value="" disabled selected>Selecione</option>
+              <option>Negativo</option>
+              <option>Traços</option>
+              <option>+</option>
+              <option>++</option>
+              <option>+++</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Bilirrubina</label>
+            <div class="segmented" role="radiogroup" aria-label="Bilirrubina">
+              <input type="radio" id="bilirrubina-neg" name="bilirrubina" value="Negativo">
+              <label for="bilirrubina-neg">Negativo</label>
+              <input type="radio" id="bilirrubina-pos" name="bilirrubina" value="Positivo">
+              <label for="bilirrubina-pos">Positivo</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="leucocitosEqu">Leucócitos</label>
+            <select id="leucocitosEqu" name="leucocitosEqu">
+              <option value="" disabled selected>Selecione</option>
+              <option>Negativo</option>
+              <option>Traços</option>
+              <option>+</option>
+              <option>++</option>
+              <option>+++</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-3">
+          <div class="field">
+            <label>Nitrito</label>
+            <div class="segmented" role="radiogroup" aria-label="Nitrito">
+              <input type="radio" id="nitrito-pos" name="nitrito" value="Positivo">
+              <label for="nitrito-pos">Positivo</label>
+              <input type="radio" id="nitrito-neg" name="nitrito" value="Negativo">
+              <label for="nitrito-neg">Negativo</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="sangueHemoglobinaEqu">Sangue/Hemoglobina</label>
+            <select id="sangueHemoglobinaEqu" name="sangueHemoglobinaEqu">
+              <option value="" disabled selected>Selecione</option>
+              <option>Negativo</option>
+              <option>Traços</option>
+              <option>+</option>
+              <option>++</option>
+              <option>+++</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Urobilinogênio</label>
+            <div class="segmented" role="radiogroup" aria-label="Urobilinogênio">
+              <input type="radio" id="urobilinogenio-neg" name="urobilinogenio" value="Negativo">
+              <label for="urobilinogenio-neg">Negativo</label>
+              <input type="radio" id="urobilinogenio-pos" name="urobilinogenio" value="Positivo">
+              <label for="urobilinogenio-pos">Positivo</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        <div class="buttons">
+          <button type="reset" class="btn btn-ghost">Limpar</button>
+          <button type="submit" class="btn btn-primary">Registrar exame</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <?!= include('JavaScriptConsultaPaciente'); ?>
+  <?!= include('JavaScriptExames'); ?>
+</body>
+</html>
+
