@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha de Anamnese e Consulta</title>
+  <?!= include('Stylesheet'); ?>
+</head>
+<body>
+
+  <?!= include('Nav', {baseUrl: baseUrl}); ?>
+
+  <div class="page">
+    <header class="page-header">
+      <div class="header-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="30" height="30">
+          <path d="M14 8h20a2 2 0 0 1 2 2v28a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+          <path d="M18 16h12 M18 23h12 M18 30h8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <p class="eyebrow">Atenção Primária Itinerante</p>
+        <h1>Ficha de Anamnese e Consulta</h1>
+        <p class="subtitle">Os dados são salvos na aba "Anamnese" da planilha</p>
+      </div>
+    </header>
+
+    <form id="anamnese-form" novalidate>
+
+      <!-- SEÇÃO 1 -->
+      <fieldset class="section">
+        <legend><span class="section-index">01</span> Identificação do atendimento</legend>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Qual o tipo de atendimento?</label>
+            <div class="segmented" role="radiogroup" aria-label="Tipo de atendimento">
+              <input type="radio" id="tipo-pediatrico" name="tipoAtendimento" value="Pediátrico" required>
+              <label for="tipo-pediatrico">Pediátrico</label>
+              <input type="radio" id="tipo-adulto" name="tipoAtendimento" value="Adulto">
+              <label for="tipo-adulto">Adulto</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="numeroAtendimento">Número do atendimento</label>
+            <input type="number" id="numeroAtendimento" name="numeroAtendimento" min="0" inputmode="numeric" placeholder="Nº do atendimento" required>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" placeholder="Nome completo do paciente" autocomplete="name" required>
+          </div>
+
+          <div class="field">
+            <label for="medico">Médico</label>
+            <select id="medico" name="medico" required>
+              <option value="" disabled selected>Selecione</option>
+              <option>Almiro</option>
+              <option>Bruna</option>
+              <option>Ana</option>
+              <option>Laura</option>
+              <option>Marinha</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <?!= include('ConsultaPaciente', {categoriaAtual: 'anamnese'}); ?>
+
+      <!-- SEÇÃO 2 — ANTECEDENTES -->
+      <fieldset class="section">
+        <legend><span class="section-index">02</span> Antecedentes de saúde</legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Possui alguma doença?</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="doenca-hipertensao" name="doencas" value="Hipertensão">
+              <label for="doenca-hipertensao">Hipertensão</label>
+
+              <input type="checkbox" id="doenca-diabetes" name="doencas" value="Diabetes">
+              <label for="doenca-diabetes">Diabetes</label>
+
+              <input type="checkbox" id="doenca-asma" name="doencas" value="Asma">
+              <label for="doenca-asma">Asma</label>
+
+              <input type="checkbox" id="doenca-cardiaca" name="doencas" value="Doença cardíaca">
+              <label for="doenca-cardiaca">Doença cardíaca</label>
+
+              <input type="checkbox" id="doenca-renal" name="doencas" value="Doença renal">
+              <label for="doenca-renal">Doença renal</label>
+
+              <input type="checkbox" id="doenca-epilepsia" name="doencas" value="Epilepsia">
+              <label for="doenca-epilepsia">Epilepsia</label>
+
+              <input type="checkbox" id="doenca-tuberculose" name="doencas" value="Tuberculose">
+              <label for="doenca-tuberculose">Tuberculose</label>
+
+              <input type="checkbox" id="doenca-hepatite" name="doencas" value="Hepatite">
+              <label for="doenca-hepatite">Hepatite</label>
+
+              <input type="checkbox" id="doenca-outro" name="doencas" value="Outro">
+              <label for="doenca-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="doenca-outro-wrapper">
+              <input type="text" id="doenca-outro-texto" name="doencasOutro" placeholder="Qual outra doença?">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Têm ou teve câncer?</label>
+            <div class="segmented" role="radiogroup" aria-label="Câncer">
+              <input type="radio" id="cancer-sim" name="cancer" value="Sim">
+              <label for="cancer-sim">Sim</label>
+              <input type="radio" id="cancer-nao" name="cancer" value="Não">
+              <label for="cancer-nao">Não</label>
+              <input type="radio" id="cancer-talvez" name="cancer" value="Talvez">
+              <label for="cancer-talvez">Talvez</label>
+              <input type="radio" id="cancer-naosei" name="cancer" value="Não sei">
+              <label for="cancer-naosei">Não sei</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2 outro-field hidden" id="cancer-detalhes-wrapper">
+          <div class="field">
+            <label>Se câncer, fez ou faz quimioterapia?</label>
+            <div class="segmented" role="radiogroup" aria-label="Quimioterapia">
+              <input type="radio" id="quimio-sim" name="quimioterapia" value="Sim">
+              <label for="quimio-sim">Sim</label>
+              <input type="radio" id="quimio-nao" name="quimioterapia" value="Não">
+              <label for="quimio-nao">Não</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Se câncer, fez ou faz radioterapia?</label>
+            <div class="segmented" role="radiogroup" aria-label="Radioterapia">
+              <input type="radio" id="radio-sim" name="radioterapia" value="Sim">
+              <label for="radio-sim">Sim</label>
+              <input type="radio" id="radio-nao" name="radioterapia" value="Não">
+              <label for="radio-nao">Não</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Já fez alguma cirurgia?</label>
+            <div class="segmented" role="radiogroup" aria-label="Cirurgia">
+              <input type="radio" id="cirurgia-sim" name="cirurgia" value="Sim">
+              <label for="cirurgia-sim">Sim</label>
+              <input type="radio" id="cirurgia-nao" name="cirurgia" value="Não">
+              <label for="cirurgia-nao">Não</label>
+              <input type="radio" id="cirurgia-talvez" name="cirurgia" value="Talvez">
+              <label for="cirurgia-talvez">Talvez</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Utiliza medicação contínua?</label>
+            <div class="segmented" role="radiogroup" aria-label="Medicação contínua">
+              <input type="radio" id="medcontinua-sim" name="medicacaoContinua" value="Sim">
+              <label for="medcontinua-sim">Sim</label>
+              <input type="radio" id="medcontinua-nao" name="medicacaoContinua" value="Não">
+              <label for="medcontinua-nao">Não</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1 outro-field hidden" id="medicamento-wrapper">
+          <div class="field">
+            <label for="medicamentoContinuo">Se sim, qual medicamento de uso contínuo?</label>
+            <input type="text" id="medicamentoContinuo" name="medicamentoContinuo" placeholder="Nome do(s) medicamento(s)">
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Têm alergia a algum medicamento?</label>
+            <div class="segmented" role="radiogroup" aria-label="Alergia a medicamento">
+              <input type="radio" id="alergia-sim" name="alergiaMedicamento" value="Sim">
+              <label for="alergia-sim">Sim</label>
+              <input type="radio" id="alergia-nao" name="alergiaMedicamento" value="Não">
+              <label for="alergia-nao">Não</label>
+              <input type="radio" id="alergia-talvez" name="alergiaMedicamento" value="Talvez">
+              <label for="alergia-talvez">Talvez</label>
+              <input type="radio" id="alergia-naosei" name="alergiaMedicamento" value="Não sei">
+              <label for="alergia-naosei">Não sei</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1 outro-field hidden" id="alergia-wrapper">
+          <div class="field">
+            <label for="qualAlergia">Se sim, qual?</label>
+            <input type="text" id="qualAlergia" name="qualAlergia" placeholder="Medicamento(s) ao qual tem alergia">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 3 — HÁBITOS DE VIDA -->
+      <fieldset class="section">
+        <legend><span class="section-index">03</span> Hábitos de vida</legend>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Tabagismo</label>
+            <div class="segmented" role="radiogroup" aria-label="Tabagismo">
+              <input type="radio" id="tabaco-sim" name="tabagismo" value="Sim">
+              <label for="tabaco-sim">Sim</label>
+              <input type="radio" id="tabaco-nao" name="tabagismo" value="Não">
+              <label for="tabaco-nao">Não</label>
+              <input type="radio" id="tabaco-ex" name="tabagismo" value="Ex-fumante">
+              <label for="tabaco-ex">Ex-fumante</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="alcool">Consumo de álcool</label>
+            <select id="alcool" name="alcool">
+              <option value="" disabled selected>Selecione</option>
+              <option>Sim, todos os dias</option>
+              <option>Sim, socialmente</option>
+              <option>Não</option>
+              <option>Ex-dependente</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-1 outro-field hidden" id="carga-tabagica-wrapper">
+          <div class="field">
+            <label for="cargaTabagica">Se tabagista, qual carga?</label>
+            <input type="text" id="cargaTabagica" name="cargaTabagica" placeholder="ex: 1 maço/dia há 10 anos">
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Faz uso de alguma outra substância?</label>
+            <div class="segmented" role="radiogroup" aria-label="Outra substância">
+              <input type="radio" id="substancia-sim" name="outraSubstancia" value="Sim">
+              <label for="substancia-sim">Sim</label>
+              <input type="radio" id="substancia-nao" name="outraSubstancia" value="Não">
+              <label for="substancia-nao">Não</label>
+              <input type="radio" id="substancia-talvez" name="outraSubstancia" value="Talvez">
+              <label for="substancia-talvez">Talvez</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1 outro-field hidden" id="substancia-wrapper">
+          <div class="field">
+            <label for="qualSubstancia">Se sim, qual substância?</label>
+            <input type="text" id="qualSubstancia" name="qualSubstancia" placeholder="Qual substância">
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Histórico nos últimos 12 meses</label>
+            <div class="checkbox-group" id="historico-checkboxes">
+              <input type="checkbox" id="hist-malaria" name="historico12meses" value="Malária">
+              <label for="hist-malaria">Malária</label>
+
+              <input type="checkbox" id="hist-dengue" name="historico12meses" value="Dengue">
+              <label for="hist-dengue">Dengue</label>
+
+              <input type="checkbox" id="hist-leishmaniose" name="historico12meses" value="Leishmaniose">
+              <label for="hist-leishmaniose">Leishmaniose</label>
+
+              <input type="checkbox" id="hist-peconhento" name="historico12meses" value="Acidente com animal peçonhento">
+              <label for="hist-peconhento">Acidente com animal peçonhento</label>
+
+              <input type="checkbox" id="hist-internacao" name="historico12meses" value="Internação">
+              <label for="hist-internacao">Internação</label>
+
+              <input type="checkbox" id="hist-diarreia" name="historico12meses" value="Diarreia">
+              <label for="hist-diarreia">Diarreia</label>
+
+              <input type="checkbox" id="hist-vomitos" name="historico12meses" value="Vômitos">
+              <label for="hist-vomitos">Vômitos</label>
+
+              <input type="checkbox" id="hist-nenhuma" name="historico12meses" value="Nenhuma">
+              <label for="hist-nenhuma">Nenhuma</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 4 — CONSULTA MÉDICA -->
+      <fieldset class="section">
+        <legend><span class="section-index">04</span> Consulta médica</legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="areaAtendimento">Área principal de atendimento</label>
+            <select id="areaAtendimento" name="areaAtendimento" required>
+              <option value="" disabled selected>Selecione</option>
+              <option>Pediatria</option>
+              <option>Ginecologia</option>
+              <option>Clínica Geral</option>
+              <option>Dermatologia</option>
+              <option>Radiologia</option>
+              <option>Ortopedia/Traumatologia</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="descricaoCaso">Breve descrição do caso</label>
+            <textarea id="descricaoCaso" name="descricaoCaso" rows="3" placeholder="Queixa principal, história da doença atual..."></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="diagnostico">Diagnóstico</label>
+            <textarea id="diagnostico" name="diagnostico" rows="2" placeholder="Diagnóstico ou hipótese diagnóstica"></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Conduta</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="conduta-curativo" name="conduta" value="Curativo">
+              <label for="conduta-curativo">Curativo</label>
+
+              <input type="checkbox" id="conduta-cp" name="conduta" value="Coleta de CP">
+              <label for="conduta-cp">Coleta de CP</label>
+
+              <input type="checkbox" id="conduta-oculos" name="conduta" value="Distribuição de óculos de sol">
+              <label for="conduta-oculos">Distribuição de óculos de sol</label>
+
+              <input type="checkbox" id="conduta-dentista" name="conduta" value="Encaminhamento dentista">
+              <label for="conduta-dentista">Encaminhamento dentista</label>
+
+              <input type="checkbox" id="conduta-fisioterapia" name="conduta" value="Encaminhamento fisioterapia">
+              <label for="conduta-fisioterapia">Encaminhamento fisioterapia</label>
+
+              <input type="checkbox" id="conduta-medicacao" name="conduta" value="Medicação">
+              <label for="conduta-medicacao">Medicação</label>
+
+              <input type="checkbox" id="conduta-orientacoes" name="conduta" value="Orientações">
+              <label for="conduta-orientacoes">Orientações</label>
+
+              <input type="checkbox" id="conduta-imagem" name="conduta" value="Solicitações de exames de imagem">
+              <label for="conduta-imagem">Solicitações de exames de imagem</label>
+
+              <input type="checkbox" id="conduta-laboratorial" name="conduta" value="Solicitações de exames laboratoriais">
+              <label for="conduta-laboratorial">Solicitações de exames laboratoriais</label>
+
+              <input type="checkbox" id="conduta-outro" name="conduta" value="Outro">
+              <label for="conduta-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="conduta-outro-wrapper">
+              <input type="text" id="conduta-outro-texto" name="condutaOutro" placeholder="Descreva a outra conduta">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 5 — CONDIÇÕES DE MORADIA -->
+      <fieldset class="section">
+        <legend><span class="section-index">05</span> Condições de moradia</legend>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="fonteAgua">A água utilizada na sua casa vem de</label>
+            <select id="fonteAgua" name="fonteAgua">
+              <option value="" disabled selected>Selecione</option>
+              <option>Rio</option>
+              <option>Chuva</option>
+              <option>Poço</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="fonte-agua-outro-wrapper">
+              <input type="text" id="fonte-agua-outro-texto" name="fonteAguaOutro" placeholder="Qual outra fonte?">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>A água recebe algum tratamento antes do consumo?</label>
+            <div class="segmented" role="radiogroup" aria-label="Tratamento da água">
+              <input type="radio" id="tratamento-sim" name="tratamentoAgua" value="Sim">
+              <label for="tratamento-sim">Sim</label>
+              <input type="radio" id="tratamento-nao" name="tratamentoAgua" value="Não">
+              <label for="tratamento-nao">Não</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1 outro-field hidden" id="como-tratamento-wrapper">
+          <div class="field">
+            <label for="comoTratamento">Se sim, como?</label>
+            <select id="comoTratamento" name="comoTratamento">
+              <option value="" disabled selected>Selecione</option>
+              <option>Ferve</option>
+              <option>Filtra</option>
+              <option>Clora</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="como-tratamento-outro-wrapper">
+              <input type="text" id="como-tratamento-outro-texto" name="comoTratamentoOutro" placeholder="Descreva o outro tratamento">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Possui banheiro/sanitário?</label>
+            <div class="segmented" role="radiogroup" aria-label="Possui banheiro">
+              <input type="radio" id="banheiro-sim" name="banheiro" value="Sim">
+              <label for="banheiro-sim">Sim</label>
+              <input type="radio" id="banheiro-nao" name="banheiro" value="Não">
+              <label for="banheiro-nao">Não</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="destinoLixo">Qual o destino do lixo?</label>
+            <select id="destinoLixo" name="destinoLixo">
+              <option value="" disabled selected>Selecione</option>
+              <option>Queima</option>
+              <option>Enterra</option>
+              <option>Céu aberto</option>
+              <option>Coleta</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="destino-lixo-outro-wrapper">
+              <input type="text" id="destino-lixo-outro-texto" name="destinoLixoOutro" placeholder="Descreva o outro destino">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        <div class="buttons">
+          <button type="reset" class="btn btn-ghost">Limpar</button>
+          <button type="submit" class="btn btn-primary">Registrar anamnese</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <?!= include('JavaScriptConsultaPaciente'); ?>
+  <?!= include('JavaScriptAnamnese'); ?>
+</body>
+</html>
