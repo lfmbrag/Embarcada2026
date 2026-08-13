@@ -1,0 +1,147 @@
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("exames-form");
+  const status = document.getElementById("form-status");
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  initConsultaPaciente("numeroAtendimento");
+
+  const secaoSorologia = document.getElementById("secao-sorologia");
+  const secaoHemograma = document.getElementById("secao-hemograma");
+  const secaoEqu = document.getElementById("secao-equ");
+
+  const camposSorologia = {
+    "ex-hiv": document.getElementById("campo-hiv"),
+    "ex-sifilis": document.getElementById("campo-sifilis"),
+    "ex-hepb": document.getElementById("campo-hepb"),
+    "ex-hepc": document.getElementById("campo-hepc")
+  };
+
+  function atualizarSecoes() {
+    const hemogramaMarcado = document.getElementById("ex-hemograma").checked;
+    const equMarcado = document.getElementById("ex-equ").checked;
+
+    let algumaSorologiaMarcada = false;
+    Object.keys(camposSorologia).forEach((id) => {
+      const marcado = document.getElementById(id).checked;
+      camposSorologia[id].style.display = marcado ? "" : "none";
+      if (marcado) algumaSorologiaMarcada = true;
+    });
+
+    secaoSorologia.classList.toggle("hidden", !algumaSorologiaMarcada);
+    secaoHemograma.classList.toggle("hidden", !hemogramaMarcado);
+    secaoEqu.classList.toggle("hidden", !equMarcado);
+  }
+
+  document.querySelectorAll('input[name="examesSolicitados"]').forEach((cb) => {
+    cb.addEventListener("change", atualizarSecoes);
+  });
+  atualizarSecoes();
+
+  const morfologiaOutroWrapper = document.getElementById("morfologia-outro-wrapper");
+  document.querySelectorAll('input[name="morfologiaHemacias"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
+      const mostrar = document.getElementById("morfologia-outro").checked;
+      morfologiaOutroWrapper.classList.toggle("hidden", !mostrar);
+      if (!mostrar) document.getElementById("morfologia-outro-texto").value = "";
+    });
+  });
+
+  const corEquSelect = document.getElementById("corEqu");
+  const corOutroWrapper = document.getElementById("cor-outro-wrapper");
+  corEquSelect.addEventListener("change", () => {
+    const mostrar = corEquSelect.value === "Outro";
+    corOutroWrapper.classList.toggle("hidden", !mostrar);
+    if (!mostrar) document.getElementById("cor-outro-texto").value = "";
+  });
+
+  const matOutroCheckbox = document.getElementById("mat-outro");
+  const matOutroWrapper = document.getElementById("mat-outro-wrapper");
+  matOutroCheckbox.addEventListener("change", () => {
+    matOutroWrapper.classList.toggle("hidden", !matOutroCheckbox.checked);
+    if (!matOutroCheckbox.checked) document.getElementById("mat-outro-texto").value = "";
+  });
+
+  const numericFields = [
+    "numeroAtendimento", "hemacias", "hemoglobina", "hematocrito", "vcm", "hcm", "chcm",
+    "rdw", "leucocitosTotais", "neutrofilos", "linfocitos", "monocitos",
+    "eosinofilos", "basofilos", "plaquetas"
+  ];
+  numericFields.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("keydown", (e) => {
+      const allowed = ["Backspace", "Delete", "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", ".", ","];
+      const isNumber = /^[0-9]$/.test(e.key);
+      const isShortcut = e.ctrlKey || e.metaKey;
+      if (!isNumber && !allowed.includes(e.key) && !isShortcut) {
+        e.preventDefault();
+      }
+    });
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    status.textContent = "";
+    status.className = "form-status";
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      status.textContent = "Verifique os campos destacados antes de continuar.";
+      status.classList.add("error");
+      return;
+    }
+
+    const dadosForm = new FormData(form);
+    const examesSolicitados = dadosForm.getAll("examesSolicitados").join(", ");
+    const materialAnalise = dadosForm.getAll("materialAnalise").join(", ");
+
+    const registro = Object.fromEntries(dadosForm.entries());
+    registro.examesSolicitados = examesSolicitados;
+    registro.materialAnalise = materialAnalise;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Salvando...";
+    status.textContent = "Enviando para a planilha...";
+    status.classList.remove("error", "success");
+
+    google.script.run
+      .withSuccessHandler((resposta) => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Registrar exame";
+
+        if (resposta && resposta.sucesso) {
+          status.textContent = "Exame registrado na planilha com sucesso!";
+          status.classList.add("success");
+          form.reset();
+          atualizarSecoes();
+          morfologiaOutroWrapper.classList.add("hidden");
+          corOutroWrapper.classList.add("hidden");
+          matOutroWrapper.classList.add("hidden");
+        } else {
+          status.textContent = "Erro ao salvar: " + (resposta && resposta.erro ? resposta.erro : "tente novamente.");
+          status.classList.add("error");
+        }
+      })
+      .withFailureHandler((erro) => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Registrar exame";
+        status.textContent = "Erro ao salvar: " + erro.message;
+        status.classList.add("error");
+      })
+      .registrarExame(registro);
+  });
+
+  form.addEventListener("reset", () => {
+    setTimeout(() => {
+      status.textContent = "";
+      status.className = "form-status";
+      atualizarSecoes();
+      morfologiaOutroWrapper.classList.add("hidden");
+      corOutroWrapper.classList.add("hidden");
+      matOutroWrapper.classList.add("hidden");
+    }, 0);
+  });
+});
+</script>
+
