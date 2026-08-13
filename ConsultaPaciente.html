@@ -1,0 +1,40 @@
+<!--
+  Painel reutilizável: mostra os dados já registrados do paciente (somente
+  leitura) conforme o número do atendimento é preenchido no formulário atual.
+  Incluído via: <?!= include('ConsultaPaciente', {categoriaAtual: 'exames'}); ?>
+  "categoriaAtual" é a categoria do próprio formulário — seu botão não aparece
+  aqui, já que consultar a si mesmo durante o preenchimento não faz sentido.
+-->
+<fieldset class="section" id="secao-consulta-paciente">
+  <legend>
+    <span class="section-index">👁</span> Dados já registrados do paciente
+    <span class="section-hint">somente leitura</span>
+  </legend>
+
+  <p style="margin:0 0 14px;font-size:13px;color:var(--ink-soft);">
+    Assim que o número do atendimento for preenchido acima, os dados já registrados nas categorias marcadas aparecem aqui para consulta.
+  </p>
+
+  <div class="category-toggles" id="category-toggles-consulta">
+    <? if (categoriaAtual !== 'triagem') { ?>
+    <input type="checkbox" class="category-toggle" id="ver-triagem" value="triagem" checked>
+    <label class="category-toggle-label" for="ver-triagem"><span class="dot"></span>Triagem</label>
+    <? } ?>
+    <? if (categoriaAtual !== 'exames') { ?>
+    <input type="checkbox" class="category-toggle" id="ver-exames" value="exames" checked>
+    <label class="category-toggle-label" for="ver-exames"><span class="dot"></span>Exames</label>
+    <? } ?>
+    <? if (categoriaAtual !== 'anamnese') { ?>
+    <input type="checkbox" class="category-toggle" id="ver-anamnese" value="anamnese" checked>
+    <label class="category-toggle-label" for="ver-anamnese"><span class="dot"></span>Consulta</label>
+    <? } ?>
+    <? if (categoriaAtual !== 'fisioterapia') { ?>
+    <input type="checkbox" class="category-toggle" id="ver-fisioterapia" value="fisioterapia" checked>
+    <label class="category-toggle-label" for="ver-fisioterapia"><span class="dot"></span>Fisioterapia</label>
+    <? } ?>
+  </div>
+
+  <div id="resultado-consulta-paciente" style="margin-top: 16px;">
+    <div class="result-state"><p>Informe o número do atendimento acima para consultar os dados já registrados.</p></div>
+  </div>
+</fieldset>
