@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha de Triagem</title>
+  <?!= include('Stylesheet'); ?>
+  <style>
+    .attention-box {
+      background: #fdf2ef;
+      border: 2px solid var(--danger);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin: 0 0 18px;
+    }
+    .attention-box .attention-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--danger);
+      font-size: 14.5px;
+      margin: 0 0 10px;
+    }
+    .attention-box .confirm-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13.5px;
+      color: var(--ink);
+    }
+    .attention-box input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+      accent-color: var(--danger);
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <?!= include('Nav', {baseUrl: baseUrl}); ?>
+
+  <div class="page">
+    <header class="page-header">
+      <div class="header-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="30" height="30">
+          <path d="M24 4 C24 4 8 16 8 28 C8 37 15.2 44 24 44 C32.8 44 40 37 40 28 C40 16 24 4 24 4 Z" fill="none" stroke="currentColor" stroke-width="2.4"/>
+          <path d="M24 16 L24 32 M16 24 L32 24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <p class="eyebrow">Atenção Primária Itinerante</p>
+        <h1>Ficha de Triagem</h1>
+        <p class="subtitle">Os dados são salvos na aba "Registros" da planilha</p>
+      </div>
+    </header>
+
+    <form id="attendance-form" novalidate>
+
+      <!-- SEÇÃO 1 — TRIAGEM -->
+      <fieldset class="section">
+        <legend><span class="section-index">01</span> Triagem</legend>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="comunidade">Comunidade</label>
+            <select id="comunidade" name="comunidade" required>
+              <option value="" disabled selected>Selecione a comunidade</option>
+              <option>Saracá</option>
+              <option>Aiparuça</option>
+              <option>Taucapecaçu</option>
+              <option>Tauatu</option>
+              <option>Sobrado</option>
+              <option>Mirapinina</option>
+              <option>Bom Jesus do Puduari</option>
+              <option>Santa Maria do Boiaçu</option>
+              <option>Barcelos/SEDE</option>
+              <option>Dom Pedro II</option>
+              <option>Vila Guajará</option>
+              <option>Caubiris</option>
+              <option>Carvoeiro</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="comunidade-outro-wrapper">
+              <input type="text" id="comunidade-outro-texto" name="comunidadeOutro" placeholder="Qual comunidade?">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="numeroAtendimento">Número do atendimento</label>
+            <input type="number" id="numeroAtendimento" name="numeroAtendimento" min="0" inputmode="numeric" placeholder="Nº do atendimento" required>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Tipo de atendimento</label>
+            <div class="segmented" role="radiogroup" aria-label="Tipo de atendimento">
+              <input type="radio" id="tipo-adulto" name="tipoAtendimento" value="Adulto (a partir de 14 anos)" required>
+              <label for="tipo-adulto" style="white-space:normal;">Adulto (a partir de 14 anos)</label>
+              <input type="radio" id="tipo-infantil" name="tipoAtendimento" value="Infantil (0 - 13 anos)">
+              <label for="tipo-infantil" style="white-space:normal;">Infantil (0 - 13 anos)</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>O tipo de atendimento que procura</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="proc-medica" name="tipoAtendimentoProcura" value="Consulta médica">
+              <label for="proc-medica">Consulta médica</label>
+              <input type="checkbox" id="proc-dentista" name="tipoAtendimentoProcura" value="Dentista">
+              <label for="proc-dentista">Dentista</label>
+              <input type="checkbox" id="proc-fisio" name="tipoAtendimentoProcura" value="Fisioterapia">
+              <label for="proc-fisio">Fisioterapia</label>
+              <input type="checkbox" id="proc-mamografia" name="tipoAtendimentoProcura" value="Mamografia (+40anos encaminhamento direto)">
+              <label for="proc-mamografia">Mamografia (+40anos encaminhamento direto)</label>
+              <input type="checkbox" id="proc-citopatologico" name="tipoAtendimentoProcura" value="Coleta de Citopatológico">
+              <label for="proc-citopatologico">Coleta de Citopatológico</label>
+              <input type="checkbox" id="proc-checkup" name="tipoAtendimentoProcura" value="Todos os disponíveis (Check-up)">
+              <label for="proc-checkup">Todos os disponíveis (Check-up)</label>
+              <input type="checkbox" id="proc-outro" name="tipoAtendimentoProcura" value="Outro">
+              <label for="proc-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="proc-outro-wrapper">
+              <input type="text" id="proc-outro-texto" name="tipoAtendimentoProcuraOutro" placeholder="Qual outro tipo de atendimento?">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="nome">Nome do paciente</label>
+            <input type="text" id="nome" name="nome" placeholder="Nome completo" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="nomeMae">Nome da mãe</label>
+            <input type="text" id="nomeMae" name="nomeMae" placeholder="Nome completo da mãe">
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="documento">Número do documento</label>
+            <input type="number" id="documento" name="documento" inputmode="numeric" placeholder="Somente números">
+          </div>
+          <div class="field">
+            <label for="cartaoSus">Número do cartão SUS</label>
+            <input type="number" id="cartaoSus" name="cartaoSus" inputmode="numeric" placeholder="Somente números">
+          </div>
+        </div>
+
+        <div class="grid grid-3">
+          <div class="field">
+            <label for="idade">Idade</label>
+            <input type="number" id="idade" name="idade" min="0" max="130" inputmode="numeric" placeholder="Anos" required>
+          </div>
+          <div class="field">
+            <label for="nascimento">Data de nascimento</label>
+            <input type="date" id="nascimento" name="dataNascimento" required>
+          </div>
+          <div class="field">
+            <label for="telefone">Número de telefone</label>
+            <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000">
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="etnia">Autodeclaração étnica</label>
+            <select id="etnia" name="etnia">
+              <option value="" disabled selected>Selecione</option>
+              <option>Branca</option>
+              <option>Preta</option>
+              <option>Parda</option>
+              <option>Amarela</option>
+              <option>Indígena</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="etnia-outro-wrapper">
+              <input type="text" id="etnia-outro-texto" name="etniaOutro" placeholder="Qual?">
+            </div>
+          </div>
+          <div class="field">
+            <label for="estadoCivil">Estado civil</label>
+            <select id="estadoCivil" name="estadoCivil">
+              <option value="" disabled selected>Selecione</option>
+              <option>Solteiro(a)</option>
+              <option>Casado(a)</option>
+              <option>Separado(a)</option>
+              <option>Divorciado(a)</option>
+              <option>Viúvo(a)</option>
+              <option>União Estável</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="estadocivil-outro-wrapper">
+              <input type="text" id="estadocivil-outro-texto" name="estadoCivilOutro" placeholder="Qual?">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Sexo</label>
+            <div class="segmented" role="radiogroup" aria-label="Sexo">
+              <input type="radio" id="sexo-f" name="sexo" value="Feminino" required>
+              <label for="sexo-f">Feminino</label>
+              <input type="radio" id="sexo-m" name="sexo" value="Masculino">
+              <label for="sexo-m">Masculino</label>
+              <input type="radio" id="sexo-outro" name="sexo" value="Outro">
+              <label for="sexo-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="sexo-outro-wrapper">
+              <input type="text" id="sexo-outro-texto" name="sexoOutro" placeholder="Descreva">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2 outro-field hidden" id="secao-feminino-wrapper">
+          <div class="field">
+            <label>Se feminino, está gestante?</label>
+            <div class="segmented" role="radiogroup" aria-label="Gestante">
+              <input type="radio" id="gestante-sim" name="gestante" value="Sim">
+              <label for="gestante-sim">Sim</label>
+              <input type="radio" id="gestante-nao" name="gestante" value="Não">
+              <label for="gestante-nao">Não</label>
+              <input type="radio" id="gestante-talvez" name="gestante" value="Talvez">
+              <label for="gestante-talvez">Talvez</label>
+              <input type="radio" id="gestante-outro" name="gestante" value="Outro">
+              <label for="gestante-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="gestante-outro-wrapper">
+              <input type="text" id="gestante-outro-texto" name="gestanteOutro" placeholder="Descreva">
+            </div>
+            <div class="outro-field hidden" id="idade-gestacional-wrapper">
+              <input type="text" id="idadeGestacional" name="idadeGestacional" placeholder="Qual a idade gestacional?">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Se feminino, é puérpera?</label>
+            <div class="segmented" role="radiogroup" aria-label="Puérpera">
+              <input type="radio" id="puerpera-sim" name="puerpera" value="Sim">
+              <label for="puerpera-sim">Sim</label>
+              <input type="radio" id="puerpera-nao" name="puerpera" value="Não">
+              <label for="puerpera-nao">Não</label>
+              <input type="radio" id="puerpera-talvez" name="puerpera" value="Talvez">
+              <label for="puerpera-talvez">Talvez</label>
+              <input type="radio" id="puerpera-outro" name="puerpera" value="Outro">
+              <label for="puerpera-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="puerpera-outro-wrapper">
+              <input type="text" id="puerpera-outro-texto" name="puerperaOutro" placeholder="Descreva">
+            </div>
+            <div class="outro-field hidden" id="tempo-parto-wrapper">
+              <input type="text" id="tempoParto" name="tempoParto" placeholder="Há quanto tempo ganhou filho?">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Possui filhos?</label>
+            <div class="segmented" role="radiogroup" aria-label="Possui filhos">
+              <input type="radio" id="filhos-sim" name="possuiFilhos" value="Sim">
+              <label for="filhos-sim">Sim</label>
+              <input type="radio" id="filhos-nao" name="possuiFilhos" value="Não">
+              <label for="filhos-nao">Não</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2 outro-field hidden" id="filhos-detalhes-wrapper">
+          <div class="field">
+            <label for="quantosFilhos">Quantos filhos</label>
+            <select id="quantosFilhos" name="quantosFilhos">
+              <option value="" disabled selected>Selecione</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="quantosfilhos-outro-wrapper">
+              <input type="text" id="quantosfilhos-outro-texto" name="quantosFilhosOutro" placeholder="Quantos?">
+            </div>
+          </div>
+          <div class="field">
+            <label for="idadeFilhos">Qual a idade dos filhos?</label>
+            <input type="text" id="idadeFilhos" name="idadeFilhos" placeholder="Ex: 3, 7 e 12 anos">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="section">
+        <legend><span class="section-index">02</span> Vacinação, saúde e antecedentes</legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Carteira de vacinação apresentada?</label>
+            <div class="segmented" role="radiogroup" aria-label="Carteira de vacinação apresentada">
+              <input type="radio" id="carteira-sim" name="carteiraVacinacao" value="Sim">
+              <label for="carteira-sim">Sim</label>
+              <input type="radio" id="carteira-nao" name="carteiraVacinacao" value="Não">
+              <label for="carteira-nao">Não</label>
+              <input type="radio" id="carteira-outro" name="carteiraVacinacao" value="Outro">
+              <label for="carteira-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="carteira-outro-wrapper">
+              <input type="text" id="carteira-outro-texto" name="carteiraVacinacaoOutro" placeholder="Descreva">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1 outro-field hidden" id="carteira-detalhes-wrapper">
+          <div class="field">
+            <label>Se sim, está completa?</label>
+            <div class="segmented" role="radiogroup" aria-label="Carteira completa">
+              <input type="radio" id="completa-sim" name="carteiraCompleta" value="Sim">
+              <label for="completa-sim">Sim</label>
+              <input type="radio" id="completa-nao" name="carteiraCompleta" value="Não">
+              <label for="completa-nao">Não</label>
+              <input type="radio" id="completa-outro" name="carteiraCompleta" value="Outro">
+              <label for="completa-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="completa-outro-wrapper">
+              <input type="text" id="completa-outro-texto" name="carteiraCompletaOutro" placeholder="Descreva">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Quais vacinas realizadas?</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="vac-bcg" name="vacinasRealizadas" value="BCG"><label for="vac-bcg">BCG</label>
+              <input type="checkbox" id="vac-hepb" name="vacinasRealizadas" value="Hepatite B"><label for="vac-hepb">Hepatite B</label>
+              <input type="checkbox" id="vac-penta" name="vacinasRealizadas" value="Pentavalente"><label for="vac-penta">Pentavalente</label>
+              <input type="checkbox" id="vac-vip" name="vacinasRealizadas" value="VIP (pólio)"><label for="vac-vip">VIP (pólio)</label>
+              <input type="checkbox" id="vac-pneumo" name="vacinasRealizadas" value="Pneumocócica 10"><label for="vac-pneumo">Pneumocócica 10</label>
+              <input type="checkbox" id="vac-rota" name="vacinasRealizadas" value="Rotavírus"><label for="vac-rota">Rotavírus</label>
+              <input type="checkbox" id="vac-menc" name="vacinasRealizadas" value="Meningocócica C"><label for="vac-menc">Meningocócica C</label>
+              <input type="checkbox" id="vac-febre" name="vacinasRealizadas" value="Febre amarela"><label for="vac-febre">Febre amarela</label>
+              <input type="checkbox" id="vac-triplice" name="vacinasRealizadas" value="Tríplice viral (SCR)"><label for="vac-triplice">Tríplice viral (SCR)</label>
+              <input type="checkbox" id="vac-dtp" name="vacinasRealizadas" value="DTP"><label for="vac-dtp">DTP</label>
+              <input type="checkbox" id="vac-hpv" name="vacinasRealizadas" value="HPV"><label for="vac-hpv">HPV</label>
+              <input type="checkbox" id="vac-dengue" name="vacinasRealizadas" value="Dengue"><label for="vac-dengue">Dengue</label>
+              <input type="checkbox" id="vac-menacwy" name="vacinasRealizadas" value="Meningocócica ACWY"><label for="vac-menacwy">Meningocócica ACWY</label>
+              <input type="checkbox" id="vac-dt" name="vacinasRealizadas" value="dT (difteria e tétano)"><label for="vac-dt">dT (difteria e tétano)</label>
+              <input type="checkbox" id="vac-influenza" name="vacinasRealizadas" value="Influenza"><label for="vac-influenza">Influenza</label>
+              <input type="checkbox" id="vac-covid" name="vacinasRealizadas" value="COVID-19"><label for="vac-covid">COVID-19</label>
+              <input type="checkbox" id="vac-vsr" name="vacinasRealizadas" value="VSR"><label for="vac-vsr">VSR</label>
+              <input type="checkbox" id="vac-outro" name="vacinasRealizadas" value="Outro"><label for="vac-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="vac-outro-wrapper">
+              <input type="text" id="vac-outro-texto" name="vacinasRealizadasOutro" placeholder="Qual outra vacina?">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Paciente possui alguma alteração ocular visível? <span class="unit">(ex: pterígio)</span></label>
+            <div class="segmented" role="radiogroup" aria-label="Alteração ocular">
+              <input type="radio" id="ocular-sim" name="alteracaoOcular" value="Sim">
+              <label for="ocular-sim">Sim</label>
+              <input type="radio" id="ocular-nao" name="alteracaoOcular" value="Não">
+              <label for="ocular-nao">Não</label>
+              <input type="radio" id="ocular-talvez" name="alteracaoOcular" value="Talvez">
+              <label for="ocular-talvez">Talvez</label>
+              <input type="radio" id="ocular-outro" name="alteracaoOcular" value="Outro">
+              <label for="ocular-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="ocular-outro-wrapper">
+              <input type="text" id="ocular-outro-texto" name="alteracaoOcularOutro" placeholder="Descreva">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Paciente estudou?</label>
+            <div class="segmented" role="radiogroup" aria-label="Estudou">
+              <input type="radio" id="estudou-sim" name="estudou" value="Sim">
+              <label for="estudou-sim">Sim</label>
+              <input type="radio" id="estudou-nao" name="estudou" value="Não">
+              <label for="estudou-nao">Não</label>
+              <input type="radio" id="estudou-talvez" name="estudou" value="Talvez">
+              <label for="estudou-talvez">Talvez</label>
+              <input type="radio" id="estudou-outro" name="estudou" value="Outro">
+              <label for="estudou-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="estudou-outro-wrapper">
+              <input type="text" id="estudou-outro-texto" name="estudouOutro" placeholder="Descreva">
+            </div>
+          </div>
+
+          <div class="field outro-field hidden" id="escolaridade-wrapper">
+            <label for="escolaridade">Se sim, qual o nível de escolaridade?</label>
+            <select id="escolaridade" name="escolaridade">
+              <option value="" disabled selected>Selecione</option>
+              <option>Fundamental - Incompleto</option>
+              <option>Fundamental - Completo</option>
+              <option>Médio - Incompleto</option>
+              <option>Médio - Completo</option>
+              <option>Superior - Incompleto</option>
+              <option>Superior - Completo</option>
+              <option>Pós-graduação - Incompleto</option>
+              <option>Pós-graduação - Completo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="trabalho">Trabalho/Ofício</label>
+            <select id="trabalho" name="trabalho">
+              <option value="" disabled selected>Selecione</option>
+              <option>Pescador(a)</option>
+              <option>Agente Comunitário de Saúde</option>
+              <option>Agricultor(a) / Lavrador(a)</option>
+              <option>Aposentado(a)</option>
+              <option>Artesão(ã)</option>
+              <option>Criança (não aplicável)</option>
+              <option>Desempregado(a)</option>
+              <option>Dono(a) de casa</option>
+              <option>Estudante</option>
+              <option>Extrativista (açaí, castanha, borracha, óleos, etc.)</option>
+              <option>Barqueiro(a) / Piloteiro(a)</option>
+              <option>Comerciante / Vendedor(a)</option>
+              <option>Professor(a)</option>
+              <option>Não exerce atividade remunerada</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="trabalho-outro-wrapper">
+              <input type="text" id="trabalho-outro-texto" name="trabalhoOutro" placeholder="Qual?">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Internações anteriores?</label>
+            <div class="segmented" role="radiogroup" aria-label="Internações anteriores">
+              <input type="radio" id="internacao-sim" name="internacoes" value="Sim">
+              <label for="internacao-sim">Sim</label>
+              <input type="radio" id="internacao-nao" name="internacoes" value="Não">
+              <label for="internacao-nao">Não</label>
+              <input type="radio" id="internacao-outro" name="internacoes" value="Outro">
+              <label for="internacao-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="internacao-outro-wrapper">
+              <input type="text" id="internacao-outro-texto" name="internacoesOutro" placeholder="Descreva">
+            </div>
+          </div>
+          <div class="field outro-field hidden" id="motivo-internacao-wrapper">
+            <label for="motivoInternacao">Se sim, por qual motivo?</label>
+            <input type="text" id="motivoInternacao" name="motivoInternacao" placeholder="Motivo da internação">
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Histórico familiar</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="hf-hipertensao" name="historicoFamiliar" value="Hipertensão"><label for="hf-hipertensao">Hipertensão</label>
+              <input type="checkbox" id="hf-diabetes" name="historicoFamiliar" value="Diabetes"><label for="hf-diabetes">Diabetes</label>
+              <input type="checkbox" id="hf-cancermama" name="historicoFamiliar" value="Câncer de mama"><label for="hf-cancermama">Câncer de mama</label>
+              <input type="checkbox" id="hf-cancercolo" name="historicoFamiliar" value="Câncer de colo do útero"><label for="hf-cancercolo">Câncer de colo do útero</label>
+              <input type="checkbox" id="hf-cancerprostata" name="historicoFamiliar" value="Câncer de próstata"><label for="hf-cancerprostata">Câncer de próstata</label>
+              <input type="checkbox" id="hf-cancercolorretal" name="historicoFamiliar" value="Câncer colorretal"><label for="hf-cancercolorretal">Câncer colorretal</label>
+              <input type="checkbox" id="hf-avc" name="historicoFamiliar" value="AVC"><label for="hf-avc">AVC</label>
+              <input type="checkbox" id="hf-infarto" name="historicoFamiliar" value="Infarto"><label for="hf-infarto">Infarto</label>
+              <input type="checkbox" id="hf-drogas" name="historicoFamiliar" value="Abuso de drogas"><label for="hf-drogas">Abuso de drogas</label>
+              <input type="checkbox" id="hf-outro" name="historicoFamiliar" value="Outro"><label for="hf-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="hf-outro-wrapper">
+              <input type="text" id="hf-outro-texto" name="historicoFamiliarOutro" placeholder="Qual outro?">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 3 — CONDIÇÕES DE MORADIA -->
+      <fieldset class="section">
+        <legend><span class="section-index">03</span> Condições de moradia</legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>A água utilizada na sua casa vem de</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="agua-rio" name="fonteAgua" value="Rio"><label for="agua-rio">Rio</label>
+              <input type="checkbox" id="agua-chuva" name="fonteAgua" value="Chuva"><label for="agua-chuva">Chuva</label>
+              <input type="checkbox" id="agua-poco" name="fonteAgua" value="Poço"><label for="agua-poco">Poço</label>
+              <input type="checkbox" id="agua-outro" name="fonteAgua" value="Outro"><label for="agua-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="agua-outro-wrapper">
+              <input type="text" id="agua-outro-texto" name="fonteAguaOutro" placeholder="Qual outra fonte?">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>A água recebe algum tratamento antes do consumo?</label>
+            <div class="segmented" role="radiogroup" aria-label="Tratamento da água">
+              <input type="radio" id="tratamento-sim" name="tratamentoAgua" value="Sim">
+              <label for="tratamento-sim">Sim</label>
+              <input type="radio" id="tratamento-nao" name="tratamentoAgua" value="Não">
+              <label for="tratamento-nao">Não</label>
+              <input type="radio" id="tratamento-outro" name="tratamentoAgua" value="Outro">
+              <label for="tratamento-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="tratamento-outro-wrapper">
+              <input type="text" id="tratamento-outro-texto" name="tratamentoAguaOutro" placeholder="Descreva">
+            </div>
+          </div>
+          <div class="field outro-field hidden" id="como-tratamento-wrapper">
+            <label for="comoTratamento">Se sim, como?</label>
+            <select id="comoTratamento" name="comoTratamento">
+              <option value="" disabled selected>Selecione</option>
+              <option>Ferve</option>
+              <option>Filtra</option>
+              <option>Clora</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="como-tratamento-outro-wrapper">
+              <input type="text" id="como-tratamento-outro-texto" name="comoTratamentoOutro" placeholder="Descreva">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Possui banheiro/sanitário?</label>
+            <div class="segmented" role="radiogroup" aria-label="Possui banheiro">
+              <input type="radio" id="banheiro-sim" name="banheiro" value="Sim">
+              <label for="banheiro-sim">Sim</label>
+              <input type="radio" id="banheiro-nao" name="banheiro" value="Não">
+              <label for="banheiro-nao">Não</label>
+              <input type="radio" id="banheiro-outro" name="banheiro" value="Outro">
+              <label for="banheiro-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="banheiro-outro-wrapper">
+              <input type="text" id="banheiro-outro-texto" name="banheiroOutro" placeholder="Descreva">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="destinoLixo">Qual o destino do lixo?</label>
+            <select id="destinoLixo" name="destinoLixo">
+              <option value="" disabled selected>Selecione</option>
+              <option>Queima</option>
+              <option>Enterra</option>
+              <option>Céu aberto</option>
+              <option>Coleta</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="destino-lixo-outro-wrapper">
+              <input type="text" id="destino-lixo-outro-texto" name="destinoLixoOutro" placeholder="Descreva">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 4 — HÁBITOS DE VIDA -->
+      <fieldset class="section">
+        <legend><span class="section-index">04</span> Hábitos de vida</legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Tabagismo</label>
+            <div class="segmented" role="radiogroup" aria-label="Tabagismo">
+              <input type="radio" id="tabaco-sim" name="tabagismo" value="Sim">
+              <label for="tabaco-sim">Sim</label>
+              <input type="radio" id="tabaco-nao" name="tabagismo" value="Não">
+              <label for="tabaco-nao">Não</label>
+              <input type="radio" id="tabaco-outro" name="tabagismo" value="Outro">
+              <label for="tabaco-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="tabaco-outro-wrapper">
+              <input type="text" id="tabaco-outro-texto" name="tabagismoOutro" placeholder="Descreva">
+            </div>
+          </div>
+        </div>
+
+        <div class="outro-field hidden" id="tabagismo-detalhes-wrapper">
+          <div class="grid grid-1">
+            <div class="field">
+              <label>Forma de exposição</label>
+              <div class="checkbox-group">
+                <input type="checkbox" id="exp-ativo" name="formaExposicao" value="Tabagismo ativo"><label for="exp-ativo">Tabagismo ativo</label>
+                <input type="checkbox" id="exp-passivo" name="formaExposicao" value="Tabagismo passivo"><label for="exp-passivo">Tabagismo passivo</label>
+                <input type="checkbox" id="exp-ocasional" name="formaExposicao" value="Tabagismo ocasional"><label for="exp-ocasional">Tabagismo ocasional</label>
+                <input type="checkbox" id="exp-extabagista" name="formaExposicao" value="Ex-tabagista"><label for="exp-extabagista">Ex-tabagista</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-1">
+            <div class="field">
+              <label>Formas de consumo</label>
+              <div class="checkbox-group">
+                <input type="checkbox" id="consumo-industrializado" name="formasConsumo" value="Cigarro industrializado"><label for="consumo-industrializado">Cigarro industrializado</label>
+                <input type="checkbox" id="consumo-vape" name="formasConsumo" value="Cigarros eletrônicos (vapes) e pods"><label for="consumo-vape">Cigarros eletrônicos (vapes) e pods</label>
+                <input type="checkbox" id="consumo-folha" name="formasConsumo" value="Folhas de tabaco enroladas (Ex: Charuto, cigarrilha)"><label for="consumo-folha">Folhas de tabaco enroladas (Ex: Charuto, cigarrilha)</label>
+                <input type="checkbox" id="consumo-mascado" name="formasConsumo" value="Fumo mascado"><label for="consumo-mascado">Fumo mascado</label>
+                <input type="checkbox" id="consumo-cachimbo" name="formasConsumo" value="Equipamentos de água ou combustão lenta (Ex: Cachimbo, narguilé)"><label for="consumo-cachimbo">Equipamentos de água ou combustão lenta (Ex: Cachimbo, narguilé)</label>
+                <input type="checkbox" id="consumo-palha" name="formasConsumo" value="Cigarro de palha e fumo de rolo"><label for="consumo-palha">Cigarro de palha e fumo de rolo</label>
+                <input type="checkbox" id="consumo-rape" name="formasConsumo" value="Rapé"><label for="consumo-rape">Rapé</label>
+                <input type="checkbox" id="consumo-outro" name="formasConsumo" value="Outro"><label for="consumo-outro">Outro</label>
+              </div>
+              <div class="outro-field hidden" id="consumo-outro-wrapper">
+                <input type="text" id="consumo-outro-texto" name="formasConsumoOutro" placeholder="Qual outra forma?">
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="cargaDiaria">Se tabagista, qual a carga diária?</label>
+              <input type="text" id="cargaDiaria" name="cargaDiaria" placeholder="Ex: 1 maço/dia">
+            </div>
+            <div class="field">
+              <label for="tempoTabagismo">Se tabagista, há quanto tempo?</label>
+              <input type="text" id="tempoTabagismo" name="tempoTabagismo" placeholder="Ex: 10 anos">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1 outro-field hidden" id="tempo-extabagista-wrapper">
+          <div class="field">
+            <label for="tempoExTabagista">Se ex-tabagista, há quanto tempo?</label>
+            <input type="text" id="tempoExTabagista" name="tempoExTabagista" placeholder="Ex: 5 anos">
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="alcool">Consumo de álcool</label>
+            <select id="alcool" name="alcool">
+              <option value="" disabled selected>Selecione</option>
+              <option>Sim, todos os dias</option>
+              <option>Sim, socialmente</option>
+              <option>Não</option>
+              <option>Ex-dependente</option>
+            </select>
+          </div>
+          <div class="field outro-field hidden" id="frequencia-alcool-wrapper">
+            <label for="frequenciaAlcool">Se consumo de álcool, qual a frequência?</label>
+            <select id="frequenciaAlcool" name="frequenciaAlcool">
+              <option value="" disabled selected>Selecione</option>
+              <option>Mensalmente ou menos</option>
+              <option>2 a 4 vezes por mês</option>
+              <option>2 a 3 vezes por semana</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="frequencia-alcool-outro-wrapper">
+              <input type="text" id="frequencia-alcool-outro-texto" name="frequenciaAlcoolOutro" placeholder="Qual frequência?">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Faz uso de alguma outra substância?</label>
+            <div class="segmented" role="radiogroup" aria-label="Outra substância">
+              <input type="radio" id="substancia-sim" name="outraSubstancia" value="Sim">
+              <label for="substancia-sim">Sim</label>
+              <input type="radio" id="substancia-nao" name="outraSubstancia" value="Não">
+              <label for="substancia-nao">Não</label>
+              <input type="radio" id="substancia-naosabe" name="outraSubstancia" value="Não sabe responder">
+              <label for="substancia-naosabe">Não sabe responder</label>
+              <input type="radio" id="substancia-outro" name="outraSubstancia" value="Outro">
+              <label for="substancia-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="substancia-outro-wrapper">
+              <input type="text" id="substancia-outro-texto" name="outraSubstanciaOutro" placeholder="Descreva">
+            </div>
+          </div>
+          <div class="field outro-field hidden" id="qual-substancia-wrapper">
+            <label for="qualSubstancia">Se sim, qual?</label>
+            <input type="text" id="qualSubstancia" name="qualSubstancia" placeholder="Qual substância">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 5 — SINAIS VITAIS -->
+      <fieldset class="section">
+        <legend><span class="section-index">05</span> Sinais vitais</legend>
+
+        <div class="grid grid-3">
+          <div class="field">
+            <label for="peso">Peso <span class="unit">(kg)</span></label>
+            <input type="number" id="peso" name="peso" step="0.1" min="0" inputmode="decimal" placeholder="0,0">
+          </div>
+          <div class="field">
+            <label for="altura">Altura <span class="unit">(cm)</span></label>
+            <input type="number" id="altura" name="altura" step="0.1" min="0" inputmode="decimal" placeholder="0,0">
+          </div>
+          <div class="field">
+            <label for="temperatura">Temperatura <span class="unit">(°C)</span></label>
+            <input type="number" id="temperatura" name="temperatura" step="0.1" min="0" inputmode="decimal" placeholder="0,0">
+          </div>
+        </div>
+
+        <div class="grid grid-4">
+          <div class="field">
+            <label for="fc">Frequência Cardíaca <span class="unit">(bpm)</span></label>
+            <input type="number" id="fc" name="frequenciaCardiaca" min="0" inputmode="numeric" placeholder="bpm">
+          </div>
+          <div class="field">
+            <label for="pa">Pressão Arterial <span class="unit">(mmHg)</span></label>
+            <input type="text" id="pa" name="pressaoArterial" inputmode="numeric" placeholder="ex: 120/80">
+          </div>
+          <div class="field">
+            <label for="satO2">Saturação de Oxigênio <span class="unit">(%)</span></label>
+            <input type="number" id="satO2" name="saturacaoOxigenio" min="0" max="100" inputmode="numeric" placeholder="%">
+          </div>
+          <div class="field">
+            <label for="circunferencia">Circunferência abdominal <span class="unit">(cm)</span></label>
+            <input type="number" id="circunferencia" name="circunferenciaAbdominal" min="0" inputmode="numeric" placeholder="cm">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 6 — ADICIONAIS -->
+      <fieldset class="section">
+        <legend><span class="section-index">06</span> Adicionais <span class="section-hint">não obrigatórias</span></legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="observacoes">Outras observações</label>
+            <textarea id="observacoes" name="observacoes" rows="4" placeholder="Descreva observações relevantes sobre o atendimento..."></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- CONFIRMAÇÃO DE IDENTIFICAÇÃO -->
+      <div class="attention-box">
+        <p class="attention-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4 M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
+          Atenção: o paciente está devidamente identificado?
+        </p>
+        <p style="margin:0 0 12px;font-size:13px;color:var(--ink-soft);">Confirme cadastro, pulseira e adesivos de atendimento antes de prosseguir.</p>
+        <label class="confirm-row">
+          <input type="checkbox" id="identificacaoConfirmada" name="identificacaoConfirmada" required>
+          <span>Confirmo que o paciente está devidamente identificado (cadastro, pulseira, adesivos de atendimento).</span>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        <div class="buttons">
+          <button type="reset" class="btn btn-ghost">Limpar</button>
+          <button type="submit" class="btn btn-primary">Registrar atendimento</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <?!= include('JavaScript'); ?>
+</body>
+</html>
+
