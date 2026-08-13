@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha de Mamografia</title>
+  <?!= include('Stylesheet'); ?>
+</head>
+<body>
+
+  <?!= include('Nav', {baseUrl: baseUrl}); ?>
+
+  <div class="page">
+    <header class="page-header">
+      <div class="header-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="30" height="30">
+          <circle cx="24" cy="26" r="15" fill="none" stroke="currentColor" stroke-width="2.2"/>
+          <circle cx="24" cy="26" r="4" fill="none" stroke="currentColor" stroke-width="2.2"/>
+          <path d="M24 6v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <p class="eyebrow">Atenção Primária Itinerante</p>
+        <h1>Ficha de Mamografia</h1>
+        <p class="subtitle">Os dados são salvos na aba "Mamografia" da planilha</p>
+      </div>
+    </header>
+
+    <form id="mamografia-form" novalidate>
+
+      <!-- SEÇÃO 1 — IDENTIFICAÇÃO -->
+      <fieldset class="section">
+        <legend><span class="section-index">01</span> Identificação do atendimento</legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="numeroAtendimento">Número do atendimento</label>
+            <input type="number" id="numeroAtendimento" name="numeroAtendimento" min="0" inputmode="numeric" placeholder="Nº do atendimento" required>
+          </div>
+        </div>
+
+        <!-- Preenchidos automaticamente a partir da Triagem pelo painel de consulta abaixo -->
+        <input type="hidden" id="tipoAtendimento" name="tipoAtendimento">
+        <input type="hidden" id="nome" name="nome">
+      </fieldset>
+
+      <?!= include('ConsultaPaciente', {categoriaAtual: 'mamografia'}); ?>
+
+      <fieldset class="section">
+        <legend><span class="section-index">02</span> Dados do exame</legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Tipo de mamografia</label>
+            <div class="segmented" role="radiogroup" aria-label="Tipo de mamografia">
+              <input type="radio" id="tipo-rastreamento" name="tipoMamografia" value="Rastreamento" required>
+              <label for="tipo-rastreamento">Rastreamento</label>
+              <input type="radio" id="tipo-diagnostico" name="tipoMamografia" value="Diagnóstico">
+              <label for="tipo-diagnostico">Diagnóstico</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="encaminhamento">Encaminhamento ao exame</label>
+            <select id="encaminhamento" name="encaminhamento" required>
+              <option value="" disabled selected>Selecione</option>
+              <option>Almiro</option>
+              <option>Bruna</option>
+              <option>Ana</option>
+              <option>Laura</option>
+              <option>Livre demanda</option>
+              <option>Médico da marinha</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="encaminhamento-outro-wrapper">
+              <input type="text" id="encaminhamento-outro-texto" name="encaminhamentoOutro" placeholder="Quem encaminhou?">
+            </div>
+          </div>
+          <div class="field">
+            <label for="motivoEncaminhamento">Motivo do encaminhamento</label>
+            <input type="text" id="motivoEncaminhamento" name="motivoEncaminhamento" placeholder="Motivo">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 3 — HISTÓRICO DA PACIENTE -->
+      <fieldset class="section">
+        <legend><span class="section-index">03</span> Histórico da paciente</legend>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Mamografia anterior</label>
+            <div class="segmented" role="radiogroup" aria-label="Mamografia anterior">
+              <input type="radio" id="mamoant-sim" name="mamografiaAnterior" value="Sim">
+              <label for="mamoant-sim">Sim</label>
+              <input type="radio" id="mamoant-nao" name="mamografiaAnterior" value="Não">
+              <label for="mamoant-nao">Não</label>
+              <input type="radio" id="mamoant-talvez" name="mamografiaAnterior" value="Talvez/Não sabe responder">
+              <label for="mamoant-talvez">Talvez/Não sabe responder</label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="dataUltimaMamografia">Data da última mamografia (estimativa)</label>
+            <input type="text" id="dataUltimaMamografia" name="dataUltimaMamografia" placeholder="Ex: 2022, ou aproximado">
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="resultadoAnterior">Resultado anterior (quando conhecido)</label>
+            <input type="text" id="resultadoAnterior" name="resultadoAnterior" placeholder="Descreva o resultado, se souber">
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Cirurgia mamária prévia</label>
+            <div class="segmented" role="radiogroup" aria-label="Cirurgia mamária prévia">
+              <input type="radio" id="cirmam-sim" name="cirurgiaMamaria" value="Sim">
+              <label for="cirmam-sim">Sim</label>
+              <input type="radio" id="cirmam-nao" name="cirurgiaMamaria" value="Não">
+              <label for="cirmam-nao">Não</label>
+              <input type="radio" id="cirmam-naosabe" name="cirurgiaMamaria" value="Não sabe responder">
+              <label for="cirmam-naosabe">Não sabe responder</label>
+              <input type="radio" id="cirmam-outro" name="cirurgiaMamaria" value="Outro">
+              <label for="cirmam-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="cirmam-outro-wrapper">
+              <input type="text" id="cirmam-outro-texto" name="cirurgiaMamariaOutro" placeholder="Descreva">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Radioterapia prévia</label>
+            <div class="segmented" role="radiogroup" aria-label="Radioterapia prévia">
+              <input type="radio" id="radprev-sim" name="radioterapiaPrevia" value="Sim">
+              <label for="radprev-sim">Sim</label>
+              <input type="radio" id="radprev-nao" name="radioterapiaPrevia" value="Não">
+              <label for="radprev-nao">Não</label>
+              <input type="radio" id="radprev-naosabe" name="radioterapiaPrevia" value="Não sabe responder">
+              <label for="radprev-naosabe">Não sabe responder</label>
+              <input type="radio" id="radprev-outro" name="radioterapiaPrevia" value="Outro">
+              <label for="radprev-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="radprev-outro-wrapper">
+              <input type="text" id="radprev-outro-texto" name="radioterapiaPreviaOutro" placeholder="Descreva">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Implante mamário</label>
+            <div class="segmented" role="radiogroup" aria-label="Implante mamário">
+              <input type="radio" id="implante-sim" name="implanteMamario" value="Sim">
+              <label for="implante-sim">Sim</label>
+              <input type="radio" id="implante-nao" name="implanteMamario" value="Não">
+              <label for="implante-nao">Não</label>
+              <input type="radio" id="implante-naosabe" name="implanteMamario" value="Não sabe responder">
+              <label for="implante-naosabe">Não sabe responder</label>
+              <input type="radio" id="implante-outro" name="implanteMamario" value="Outro">
+              <label for="implante-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="implante-outro-wrapper">
+              <input type="text" id="implante-outro-texto" name="implanteMamarioOutro" placeholder="Descreva">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>História pessoal de câncer de mama</label>
+            <div class="segmented" role="radiogroup" aria-label="História pessoal de câncer de mama">
+              <input type="radio" id="histpessoal-sim" name="historiaPessoalCancer" value="Sim">
+              <label for="histpessoal-sim">Sim</label>
+              <input type="radio" id="histpessoal-nao" name="historiaPessoalCancer" value="Não">
+              <label for="histpessoal-nao">Não</label>
+              <input type="radio" id="histpessoal-naosabe" name="historiaPessoalCancer" value="Não sabe responder">
+              <label for="histpessoal-naosabe">Não sabe responder</label>
+              <input type="radio" id="histpessoal-outro" name="historiaPessoalCancer" value="Outro">
+              <label for="histpessoal-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="histpessoal-outro-wrapper">
+              <input type="text" id="histpessoal-outro-texto" name="historiaPessoalCancerOutro" placeholder="Descreva">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>História familiar de câncer de mama</label>
+            <div class="segmented" role="radiogroup" aria-label="História familiar de câncer de mama">
+              <input type="radio" id="histfam-sim" name="historiaFamiliarCancer" value="Sim">
+              <label for="histfam-sim">Sim</label>
+              <input type="radio" id="histfam-nao" name="historiaFamiliarCancer" value="Não">
+              <label for="histfam-nao">Não</label>
+              <input type="radio" id="histfam-naosabe" name="historiaFamiliarCancer" value="Não sabe responder">
+              <label for="histfam-naosabe">Não sabe responder</label>
+              <input type="radio" id="histfam-outro" name="historiaFamiliarCancer" value="Outro">
+              <label for="histfam-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="histfam-outro-wrapper">
+              <input type="text" id="histfam-outro-texto" name="historiaFamiliarCancerOutro" placeholder="Descreva">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1 outro-field hidden" id="grau-parentesco-wrapper">
+          <div class="field">
+            <label>Se história familiar, grau de parentesco</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="parentesco-primeiro" name="grauParentesco" value="Primeiro grau: Mãe, irmã e filha">
+              <label for="parentesco-primeiro">Primeiro grau: Mãe, irmã e filha</label>
+              <input type="checkbox" id="parentesco-segundo" name="grauParentesco" value="Segundo grau: Avó, tia e sobrinha">
+              <label for="parentesco-segundo">Segundo grau: Avó, tia e sobrinha</label>
+              <input type="checkbox" id="parentesco-outro" name="grauParentesco" value="Outro">
+              <label for="parentesco-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="parentesco-outro-wrapper">
+              <input type="text" id="parentesco-outro-texto" name="grauParentescoOutro" placeholder="Descreva o parentesco">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-3">
+          <div class="field">
+            <label>Terapia hormonal</label>
+            <div class="segmented" role="radiogroup" aria-label="Terapia hormonal">
+              <input type="radio" id="hormonal-sim" name="terapiaHormonal" value="Sim">
+              <label for="hormonal-sim">Sim</label>
+              <input type="radio" id="hormonal-nao" name="terapiaHormonal" value="Não">
+              <label for="hormonal-nao">Não</label>
+              <input type="radio" id="hormonal-naosabe" name="terapiaHormonal" value="Não sabe responder">
+              <label for="hormonal-naosabe">Não sabe responder</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Utiliza anticoncepcional oral</label>
+            <div class="segmented" role="radiogroup" aria-label="Anticoncepcional oral">
+              <input type="radio" id="anticoncepcional-sim" name="anticoncepcional" value="Sim">
+              <label for="anticoncepcional-sim">Sim</label>
+              <input type="radio" id="anticoncepcional-nao" name="anticoncepcional" value="Não">
+              <label for="anticoncepcional-nao">Não</label>
+              <input type="radio" id="anticoncepcional-naosabe" name="anticoncepcional" value="Não sabe responder">
+              <label for="anticoncepcional-naosabe">Não sabe responder</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Lactação</label>
+            <div class="segmented" role="radiogroup" aria-label="Lactação">
+              <input type="radio" id="lactacao-sim" name="lactacao" value="Sim">
+              <label for="lactacao-sim">Sim</label>
+              <input type="radio" id="lactacao-nao" name="lactacao" value="Não">
+              <label for="lactacao-nao">Não</label>
+              <input type="radio" id="lactacao-naosabe" name="lactacao" value="Não sabe responder">
+              <label for="lactacao-naosabe">Não sabe responder</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 4 — ATENDIMENTO/EXAME -->
+      <fieldset class="section">
+        <legend><span class="section-index">04</span> Atendimento/Exame</legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Dados clínicos</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="dc-assintomatica" name="dadosClinicos" value="Assintomática"><label for="dc-assintomatica">Assintomática</label>
+              <input type="checkbox" id="dc-nodulo" name="dadosClinicos" value="Nódulo palpável"><label for="dc-nodulo">Nódulo palpável</label>
+              <input type="checkbox" id="dc-dor" name="dadosClinicos" value="Dor mamária"><label for="dc-dor">Dor mamária</label>
+              <input type="checkbox" id="dc-retracao" name="dadosClinicos" value="Retração do mamilo"><label for="dc-retracao">Retração do mamilo</label>
+              <input type="checkbox" id="dc-descarga" name="dadosClinicos" value="Descarga papilar"><label for="dc-descarga">Descarga papilar</label>
+              <input type="checkbox" id="dc-inflamatorias" name="dadosClinicos" value="Alterações inflamatórias"><label for="dc-inflamatorias">Alterações inflamatórias</label>
+              <input type="checkbox" id="dc-linfonodo" name="dadosClinicos" value="Linfonodo axilar palpável"><label for="dc-linfonodo">Linfonodo axilar palpável</label>
+              <input type="checkbox" id="dc-outro" name="dadosClinicos" value="Outro"><label for="dc-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="dc-outro-wrapper">
+              <input type="text" id="dc-outro-texto" name="dadosClinicosOutro" placeholder="Qual outro dado clínico?">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Paciente sintomática?</label>
+            <div class="segmented" role="radiogroup" aria-label="Paciente sintomática">
+              <input type="radio" id="sintomatica-sim" name="sintomatica" value="Sim">
+              <label for="sintomatica-sim">Sim</label>
+              <input type="radio" id="sintomatica-nao" name="sintomatica" value="Não">
+              <label for="sintomatica-nao">Não</label>
+            </div>
+          </div>
+        </div>
+
+        <p class="subsection-title">Achados mamográficos</p>
+        <p style="margin:0 0 12px;font-size:13px;color:var(--ink-soft);">Marque os achados encontrados em cada mama.</p>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Mama direita</label>
+            <div class="checkbox-group">
+              <input type="checkbox" class="achado-checkbox" id="dir-nodulos" name="achadosDireita" value="Nódulos"><label for="dir-nodulos">Nódulos</label>
+              <input type="checkbox" id="dir-assimetria" name="achadosDireita" value="Assimetria"><label for="dir-assimetria">Assimetria</label>
+              <input type="checkbox" id="dir-distorcao" name="achadosDireita" value="Distorção arquitetural"><label for="dir-distorcao">Distorção arquitetural</label>
+              <input type="checkbox" id="dir-calcificacoes" name="achadosDireita" value="Calcificações"><label for="dir-calcificacoes">Calcificações</label>
+              <input type="checkbox" id="dir-calc-suspeitas" name="achadosDireita" value="Calcificações suspeitas"><label for="dir-calc-suspeitas">Calcificações suspeitas</label>
+              <input type="checkbox" id="dir-calc-benignas" name="achadosDireita" value="Calcificações benignas"><label for="dir-calc-benignas">Calcificações benignas</label>
+              <input type="checkbox" id="dir-linfonodos" name="achadosDireita" value="Linfonodos intramamários"><label for="dir-linfonodos">Linfonodos intramamários</label>
+              <input type="checkbox" id="dir-densidade" name="achadosDireita" value="Densidade assimétrica"><label for="dir-densidade">Densidade assimétrica</label>
+              <input type="checkbox" id="dir-espessamento" name="achadosDireita" value="Espessamento cutâneo"><label for="dir-espessamento">Espessamento cutâneo</label>
+              <input type="checkbox" id="dir-retracao-cutanea" name="achadosDireita" value="Retração cutânea"><label for="dir-retracao-cutanea">Retração cutânea</label>
+              <input type="checkbox" id="dir-retracao-mamilo" name="achadosDireita" value="Retração do mamilo"><label for="dir-retracao-mamilo">Retração do mamilo</label>
+              <input type="checkbox" id="dir-lesoes" name="achadosDireita" value="Lesões de pele"><label for="dir-lesoes">Lesões de pele</label>
+              <input type="checkbox" id="dir-outros" name="achadosDireita" value="Outros achados"><label for="dir-outros">Outros achados</label>
+              <input type="checkbox" id="dir-sem-alteracoes" name="achadosDireita" value="Sem alterações"><label for="dir-sem-alteracoes">Sem alterações</label>
+            </div>
+            <div class="outro-field hidden" id="dir-outro-wrapper">
+              <input type="text" id="dir-outro-texto" name="achadosDireitaOutro" placeholder="Descreva o outro achado">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Mama esquerda</label>
+            <div class="checkbox-group">
+              <input type="checkbox" class="achado-checkbox" id="esq-nodulos" name="achadosEsquerda" value="Nódulos"><label for="esq-nodulos">Nódulos</label>
+              <input type="checkbox" id="esq-assimetria" name="achadosEsquerda" value="Assimetria"><label for="esq-assimetria">Assimetria</label>
+              <input type="checkbox" id="esq-distorcao" name="achadosEsquerda" value="Distorção arquitetural"><label for="esq-distorcao">Distorção arquitetural</label>
+              <input type="checkbox" id="esq-calcificacoes" name="achadosEsquerda" value="Calcificações"><label for="esq-calcificacoes">Calcificações</label>
+              <input type="checkbox" id="esq-calc-suspeitas" name="achadosEsquerda" value="Calcificações suspeitas"><label for="esq-calc-suspeitas">Calcificações suspeitas</label>
+              <input type="checkbox" id="esq-calc-benignas" name="achadosEsquerda" value="Calcificações benignas"><label for="esq-calc-benignas">Calcificações benignas</label>
+              <input type="checkbox" id="esq-linfonodos" name="achadosEsquerda" value="Linfonodos intramamários"><label for="esq-linfonodos">Linfonodos intramamários</label>
+              <input type="checkbox" id="esq-densidade" name="achadosEsquerda" value="Densidade assimétrica"><label for="esq-densidade">Densidade assimétrica</label>
+              <input type="checkbox" id="esq-espessamento" name="achadosEsquerda" value="Espessamento cutâneo"><label for="esq-espessamento">Espessamento cutâneo</label>
+              <input type="checkbox" id="esq-retracao-cutanea" name="achadosEsquerda" value="Retração cutânea"><label for="esq-retracao-cutanea">Retração cutânea</label>
+              <input type="checkbox" id="esq-retracao-mamilo" name="achadosEsquerda" value="Retração do mamilo"><label for="esq-retracao-mamilo">Retração do mamilo</label>
+              <input type="checkbox" id="esq-lesoes" name="achadosEsquerda" value="Lesões de pele"><label for="esq-lesoes">Lesões de pele</label>
+              <input type="checkbox" id="esq-outros" name="achadosEsquerda" value="Outros achados"><label for="esq-outros">Outros achados</label>
+              <input type="checkbox" id="esq-sem-alteracoes" name="achadosEsquerda" value="Sem alterações"><label for="esq-sem-alteracoes">Sem alterações</label>
+            </div>
+            <div class="outro-field hidden" id="esq-outro-wrapper">
+              <input type="text" id="esq-outro-texto" name="achadosEsquerdaOutro" placeholder="Descreva o outro achado">
+            </div>
+          </div>
+        </div>
+
+        <div class="outro-field hidden" id="nodulo-detalhes-wrapper">
+          <div class="grid grid-2">
+            <div class="field">
+              <label>Se presença de nódulos</label>
+              <div class="segmented" role="radiogroup" aria-label="Tipo de nódulo">
+                <input type="radio" id="nodulo-suspeito" name="noduloTipo" value="Nódulo suspeito">
+                <label for="nodulo-suspeito">Nódulo suspeito</label>
+                <input type="radio" id="nodulo-benigno" name="noduloTipo" value="Nódulo benigno">
+                <label for="nodulo-benigno">Nódulo benigno</label>
+                <input type="radio" id="nodulo-provavel" name="noduloTipo" value="Nódulo provavelmente benigno">
+                <label for="nodulo-provavel">Nódulo provavelmente benigno</label>
+              </div>
+            </div>
+            <div class="field">
+              <label>Tamanho do nódulo</label>
+              <div class="segmented" role="radiogroup" aria-label="Tamanho do nódulo">
+                <input type="radio" id="tamanho-1" name="noduloTamanho" value="0 a 1">
+                <label for="tamanho-1">0 a 1</label>
+                <input type="radio" id="tamanho-2" name="noduloTamanho" value="1 a 2">
+                <label for="tamanho-2">1 a 2</label>
+                <input type="radio" id="tamanho-3" name="noduloTamanho" value="Maior que 2">
+                <label for="tamanho-3">Maior que 2</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="densidadeMamaria">Densidade mamária <span class="unit">(BI-RADS)</span></label>
+            <select id="densidadeMamaria" name="densidadeMamaria">
+              <option value="" disabled selected>Selecione</option>
+              <option>A – Mamas quase inteiramente gordurosas</option>
+              <option>B – Áreas esparsas de tecido fibroglandular</option>
+              <option>C – Heterogeneamente densas</option>
+              <option>D – Extremamente densas</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="biRads">Classificação BI-RADS</label>
+            <select id="biRads" name="biRads">
+              <option value="" disabled selected>Selecione</option>
+              <option>BI-RADS 0</option>
+              <option>BI-RADS 1</option>
+              <option>BI-RADS 2</option>
+              <option>BI-RADS 3</option>
+              <option>BI-RADS 4</option>
+              <option>BI-RADS 5</option>
+              <option>BI-RADS 6</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Conclusão do exame</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="conclusao-sem" name="conclusaoExame" value="Sem alterações"><label for="conclusao-sem">Sem alterações</label>
+              <input type="checkbox" id="conclusao-benignos" name="conclusaoExame" value="Achados benignos"><label for="conclusao-benignos">Achados benignos</label>
+              <input type="checkbox" id="conclusao-suspeitos" name="conclusaoExame" value="Achados suspeitos"><label for="conclusao-suspeitos">Achados suspeitos</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Recomendação</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="rec-rastreamento" name="recomendacao" value="Rastreamento anual"><label for="rec-rastreamento">Rastreamento anual</label>
+              <input type="checkbox" id="rec-adicional" name="recomendacao" value="Exame adicional"><label for="rec-adicional">Exame adicional</label>
+              <input type="checkbox" id="rec-controle" name="recomendacao" value="Controle periódico - 6 meses"><label for="rec-controle">Controle periódico - 6 meses</label>
+              <input type="checkbox" id="rec-usg" name="recomendacao" value="Ultrassonografia"><label for="rec-usg">Ultrassonografia</label>
+              <input type="checkbox" id="rec-magnificacao" name="recomendacao" value="Magnificação"><label for="rec-magnificacao">Magnificação</label>
+              <input type="checkbox" id="rec-compressao" name="recomendacao" value="Compressão localizada"><label for="rec-compressao">Compressão localizada</label>
+              <input type="checkbox" id="rec-ressonancia" name="recomendacao" value="Ressonância magnética"><label for="rec-ressonancia">Ressonância magnética</label>
+              <input type="checkbox" id="rec-puncao" name="recomendacao" value="Punção aspirativa"><label for="rec-puncao">Punção aspirativa</label>
+              <input type="checkbox" id="rec-core" name="recomendacao" value="Core biopsy"><label for="rec-core">Core biopsy</label>
+              <input type="checkbox" id="rec-biopsia" name="recomendacao" value="Biópsia cirúrgica"><label for="rec-biopsia">Biópsia cirúrgica</label>
+              <input type="checkbox" id="rec-mastologista" name="recomendacao" value="Encaminhamento para mastologista"><label for="rec-mastologista">Encaminhamento para mastologista</label>
+              <input type="checkbox" id="rec-outro" name="recomendacao" value="Outro"><label for="rec-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="rec-outro-wrapper">
+              <input type="text" id="rec-outro-texto" name="recomendacaoOutro" placeholder="Qual outra recomendação?">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="observacoesAdicionais">Observações adicionais</label>
+            <textarea id="observacoesAdicionais" name="observacoesAdicionais" rows="3" placeholder="Observações adicionais"></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        <div class="buttons">
+          <button type="reset" class="btn btn-ghost">Limpar</button>
+          <button type="submit" class="btn btn-primary">Registrar mamografia</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <?!= include('JavaScriptConsultaPaciente'); ?>
+  <?!= include('JavaScriptMamografia'); ?>
+</body>
+</html>
