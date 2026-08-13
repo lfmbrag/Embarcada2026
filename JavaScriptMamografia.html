@@ -1,0 +1,173 @@
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("mamografia-form");
+  const status = document.getElementById("form-status");
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  initConsultaPaciente("numeroAtendimento");
+
+  /* ---------- Utilitários ---------- */
+  function ligarOutroSelect(selectId, wrapperId, textoId) {
+    const select = document.getElementById(selectId);
+    const wrapper = document.getElementById(wrapperId);
+    if (!select || !wrapper) return () => {};
+    function atualizar() {
+      const mostrar = select.value === "Outro";
+      wrapper.classList.toggle("hidden", !mostrar);
+      if (!mostrar) { const t = document.getElementById(textoId); if (t) t.value = ""; }
+    }
+    select.addEventListener("change", atualizar);
+    return atualizar;
+  }
+
+  function ligarOutroCheckbox(checkboxId, wrapperId, textoId) {
+    const checkbox = document.getElementById(checkboxId);
+    const wrapper = document.getElementById(wrapperId);
+    if (!checkbox || !wrapper) return () => {};
+    function atualizar() {
+      wrapper.classList.toggle("hidden", !checkbox.checked);
+      if (!checkbox.checked) { const t = document.getElementById(textoId); if (t) t.value = ""; }
+    }
+    checkbox.addEventListener("change", atualizar);
+    return atualizar;
+  }
+
+  function ligarOutroRadio(nomeGrupo, wrapperId, textoId) {
+    const radios = document.querySelectorAll('input[name="' + nomeGrupo + '"]');
+    const wrapper = document.getElementById(wrapperId);
+    if (!radios.length || !wrapper) return () => {};
+    function atualizar() {
+      const sel = document.querySelector('input[name="' + nomeGrupo + '"]:checked');
+      const mostrar = sel && sel.value === "Outro";
+      wrapper.classList.toggle("hidden", !mostrar);
+      if (!mostrar) { const t = document.getElementById(textoId); if (t) t.value = ""; }
+    }
+    radios.forEach((r) => r.addEventListener("change", atualizar));
+    return atualizar;
+  }
+
+  function ligarCondicionalRadio(nomeGrupo, valoresQueMostram, wrapperId, campoParaLimparIds) {
+    const wrapper = document.getElementById(wrapperId);
+    const radios = document.querySelectorAll('input[name="' + nomeGrupo + '"]');
+    if (!wrapper || radios.length === 0) return () => {};
+    function atualizar() {
+      const selecionado = document.querySelector('input[name="' + nomeGrupo + '"]:checked');
+      const mostrar = selecionado && valoresQueMostram.includes(selecionado.value);
+      wrapper.classList.toggle("hidden", !mostrar);
+      if (!mostrar && campoParaLimparIds) {
+        campoParaLimparIds.forEach((id) => { const el = document.getElementById(id); if (el) el.value = ""; });
+      }
+    }
+    radios.forEach((r) => r.addEventListener("change", atualizar));
+    return atualizar;
+  }
+
+  const resets = [];
+
+  resets.push(ligarOutroSelect("encaminhamento", "encaminhamento-outro-wrapper", "encaminhamento-outro-texto"));
+
+  ["cirurgiaMamaria", "radioterapiaPrevia", "implanteMamario", "historiaPessoalCancer"].forEach((nome, i) => {
+    const wrappers = ["cirmam-outro-wrapper", "radprev-outro-wrapper", "implante-outro-wrapper", "histpessoal-outro-wrapper"];
+    const textos = ["cirmam-outro-texto", "radprev-outro-texto", "implante-outro-texto", "histpessoal-outro-texto"];
+    resets.push(ligarOutroRadio(nome, wrappers[i], textos[i]));
+  });
+
+  resets.push(ligarOutroRadio("historiaFamiliarCancer", "histfam-outro-wrapper", "histfam-outro-texto"));
+  resets.push(ligarCondicionalRadio("historiaFamiliarCancer", ["Sim"], "grau-parentesco-wrapper"));
+  resets.push(ligarOutroCheckbox("parentesco-outro", "parentesco-outro-wrapper", "parentesco-outro-texto"));
+
+  resets.push(ligarOutroCheckbox("dc-outro", "dc-outro-wrapper", "dc-outro-texto"));
+  resets.push(ligarOutroCheckbox("dir-outros", "dir-outro-wrapper", "dir-outro-texto"));
+  resets.push(ligarOutroCheckbox("esq-outros", "esq-outro-wrapper", "esq-outro-texto"));
+  resets.push(ligarOutroCheckbox("rec-outro", "rec-outro-wrapper", "rec-outro-texto"));
+
+  resets.forEach((fn) => fn());
+
+  /* ---------- Nódulos: mostra detalhes se "Nódulos" marcado em qualquer lado ---------- */
+  const noduloDireita = document.getElementById("dir-nodulos");
+  const noduloEsquerda = document.getElementById("esq-nodulos");
+  const noduloDetalhesWrapper = document.getElementById("nodulo-detalhes-wrapper");
+  function atualizarNodulos() {
+    const mostrar = (noduloDireita && noduloDireita.checked) || (noduloEsquerda && noduloEsquerda.checked);
+    noduloDetalhesWrapper.classList.toggle("hidden", !mostrar);
+  }
+  if (noduloDireita) noduloDireita.addEventListener("change", atualizarNodulos);
+  if (noduloEsquerda) noduloEsquerda.addEventListener("change", atualizarNodulos);
+  atualizarNodulos();
+
+  /* ---------- Impede letras no campo "apenas número" ---------- */
+  const el = document.getElementById("numeroAtendimento");
+  if (el) {
+    el.addEventListener("keydown", (e) => {
+      const allowed = ["Backspace", "Delete", "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+      const isNumber = /^[0-9]$/.test(e.key);
+      const isShortcut = e.ctrlKey || e.metaKey;
+      if (!isNumber && !allowed.includes(e.key) && !isShortcut) e.preventDefault();
+    });
+  }
+
+  /* ---------- Campos de múltipla escolha ---------- */
+  const camposMultiplaEscolha = [
+    "grauParentesco", "dadosClinicos", "achadosDireita", "achadosEsquerda",
+    "conclusaoExame", "recomendacao"
+  ];
+
+  /* ---------- Envio do formulário ---------- */
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    status.textContent = "";
+    status.className = "form-status";
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      status.textContent = "Verifique os campos destacados antes de continuar.";
+      status.classList.add("error");
+      return;
+    }
+
+    const dadosForm = new FormData(form);
+    const registro = Object.fromEntries(dadosForm.entries());
+    camposMultiplaEscolha.forEach((nome) => {
+      registro[nome] = dadosForm.getAll(nome).join(", ");
+    });
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Salvando...";
+    status.textContent = "Enviando para a planilha...";
+    status.classList.remove("error", "success");
+
+    google.script.run
+      .withSuccessHandler((resposta) => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Registrar mamografia";
+
+        if (resposta && resposta.sucesso) {
+          status.textContent = "Mamografia registrada na planilha com sucesso!";
+          status.classList.add("success");
+          form.reset();
+          resets.forEach((fn) => fn());
+          atualizarNodulos();
+        } else {
+          status.textContent = "Erro ao salvar: " + (resposta && resposta.erro ? resposta.erro : "tente novamente.");
+          status.classList.add("error");
+        }
+      })
+      .withFailureHandler((erro) => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Registrar mamografia";
+        status.textContent = "Erro ao salvar: " + erro.message;
+        status.classList.add("error");
+      })
+      .registrarMamografia(registro);
+  });
+
+  form.addEventListener("reset", () => {
+    setTimeout(() => {
+      status.textContent = "";
+      status.className = "form-status";
+      resets.forEach((fn) => fn());
+      atualizarNodulos();
+    }, 0);
+  });
+});
+</script>
