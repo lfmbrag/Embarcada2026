@@ -1,0 +1,151 @@
+<script>
+/**
+ * Componente reutilizável de consulta somente leitura, usado dentro dos
+ * formulários de Exames, Consulta (Anamnese) e Fisioterapia.
+ * Chame initConsultaPaciente('idDoCampoNumero') depois que o DOM carregar.
+ */
+function initConsultaPaciente(idCampoNumero) {
+  var campoNumero = document.getElementById(idCampoNumero);
+  var container = document.getElementById("resultado-consulta-paciente");
+  var toggles = document.querySelectorAll("#category-toggles-consulta .category-toggle");
+
+  if (!campoNumero || !container) return;
+
+  function escapeHtml(texto) {
+    var div = document.createElement("div");
+    div.textContent = texto === null || texto === undefined ? "" : String(texto);
+    return div.innerHTML;
+  }
+
+  function mostrarEstado(mensagem) {
+    container.innerHTML = '<div class="result-state"><p>' + escapeHtml(mensagem) + '</p></div>';
+  }
+
+  function categoriasSelecionadas() {
+    return Array.from(toggles).filter(function (t) { return t.checked; }).map(function (t) { return t.value; });
+  }
+
+  function renderizarCartaoDeCategoria(categoriaResultado) {
+    var registros = categoriaResultado.registros || [];
+    var grupos = categoriaResultado.grupos || [];
+    var campoTitulo = categoriaResultado.campoTitulo;
+    var rotulo = categoriaResultado.rotulo;
+
+    if (categoriaResultado.avisoAbaInexistente) {
+      return '<div class="result-state"><p>' + escapeHtml(rotulo) + ': ainda não há nenhum registro salvo nesta categoria.</p></div>';
+    }
+
+    if (registros.length === 0) {
+      return '<div class="result-card"><div class="result-card-header"><h2>' + escapeHtml(rotulo) + '</h2></div>' +
+        '<div class="result-body"><div class="result-state"><p>Nenhum registro de ' + escapeHtml(rotulo).toLowerCase() +
+        ' encontrado para este número.</p></div></div></div>';
+    }
+
+    var ordenados = registros.slice().reverse();
+    var html = "";
+
+    ordenados.forEach(function (registro) {
+      var titulo = campoTitulo && registro[campoTitulo] ? registro[campoTitulo] : rotulo;
+      var dataRegistro = registro["Data/Hora do registro"] || "";
+
+      html += '<div class="result-card">';
+      html += '<div class="result-card-header"><h2>' + escapeHtml(rotulo) + ' — ' + escapeHtml(titulo) + '</h2>';
+      if (dataRegistro) {
+        html += '<span class="result-meta">Registrado em ' + escapeHtml(dataRegistro) + '</span>';
+      }
+      html += '</div><div class="result-body">';
+
+      grupos.forEach(function (grupo) {
+        html += '<div class="result-group"><p class="result-group-title">' + escapeHtml(grupo.titulo) + '</p><dl class="result-grid">';
+        grupo.campos.forEach(function (campo) {
+          var valor = registro[campo];
+          var ehLongo = typeof valor === "string" && valor.length > 60;
+          html += '<div class="result-item' + (ehLongo ? " full-width" : "") + '">';
+          html += '<dt>' + escapeHtml(campo) + '</dt><dd>' + escapeHtml(valor) + '</dd></div>';
+        });
+        html += '</dl></div>';
+      });
+
+      html += '</div></div>';
+    });
+
+    return html;
+  }
+
+  function preencherIdentificacaoComTriagem(resultados) {
+    var resultadoTriagem = resultados.filter(function (r) { return r.categoria === "triagem"; })[0];
+    if (!resultadoTriagem || !resultadoTriagem.registros || resultadoTriagem.registros.length === 0) return;
+
+    // Usa o registro de triagem mais recente para este número
+    var registro = resultadoTriagem.registros[resultadoTriagem.registros.length - 1];
+
+    var nomePaciente = registro["Nome do paciente"];
+    var campoNome = document.getElementById("nome");
+    if (campoNome && nomePaciente) {
+      campoNome.value = nomePaciente;
+    }
+
+    var tipoFaixa = registro["Tipo de atendimento (faixa etária)"];
+    if (tipoFaixa) {
+      var radioTipo = document.querySelector('input[name="tipoAtendimento"][value="' + tipoFaixa + '"]');
+      if (radioTipo) {
+        radioTipo.checked = true;
+        radioTipo.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+  }
+
+  function buscar() {
+    var numero = campoNumero.value.trim();
+    var categorias = categoriasSelecionadas();
+
+    if (!numero) {
+      mostrarEstado("Informe o número do atendimento acima para consultar os dados já registrados.");
+      return;
+    }
+    if (categorias.length === 0) {
+      mostrarEstado("Marque ao menos uma categoria acima para consultar.");
+      return;
+    }
+
+    mostrarEstado("Consultando dados do paciente...");
+
+    google.script.run
+      .withSuccessHandler(function (resposta) {
+        if (!resposta || !resposta.sucesso) {
+          mostrarEstado(resposta && resposta.erro ? resposta.erro : "Não foi possível consultar os dados.");
+          return;
+        }
+        var resultados = resposta.resultados || [];
+        preencherIdentificacaoComTriagem(resultados);
+        var algumComRegistros = resultados.some(function (r) { return (r.registros || []).length > 0; });
+        if (!algumComRegistros) {
+          mostrarEstado("Nenhum dado encontrado para o número " + numero + " nas categorias marcadas.");
+          return;
+        }
+        var html = "";
+        resultados.forEach(function (categoriaResultado) {
+          html += renderizarCartaoDeCategoria(categoriaResultado);
+        });
+        container.innerHTML = html;
+      })
+      .withFailureHandler(function (erro) {
+        mostrarEstado("Erro ao consultar: " + erro.message);
+      })
+      .buscarDadosPaciente(numero, categorias);
+  }
+
+  // Consulta automaticamente ao sair do campo, ao apertar Enter, ou ao
+  // trocar quais categorias estão marcadas.
+  campoNumero.addEventListener("blur", buscar);
+  campoNumero.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      buscar();
+    }
+  });
+  toggles.forEach(function (toggle) {
+    toggle.addEventListener("change", buscar);
+  });
+}
+</script>
