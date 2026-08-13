@@ -1,0 +1,95 @@
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("attendance-form");
+  const status = document.getElementById("form-status");
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  const intensidade = document.getElementById("intensidade");
+  const intensidadeValor = document.getElementById("intensidade-valor");
+  const dorRadios = document.querySelectorAll('input[name="dor"]');
+
+  intensidade.addEventListener("input", () => {
+    intensidadeValor.textContent = intensidade.value;
+  });
+
+  function toggleIntensidade() {
+    const dorSim = document.getElementById("dor-sim").checked;
+    intensidade.disabled = !dorSim;
+    if (!dorSim) {
+      intensidade.value = 1;
+      intensidadeValor.textContent = "1";
+    }
+  }
+
+  dorRadios.forEach((radio) => radio.addEventListener("change", toggleIntensidade));
+  toggleIntensidade();
+
+  const numericFields = ["numero", "idade", "documento", "peso", "altura", "temperatura", "fc", "fr", "satO2"];
+  numericFields.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("keydown", (e) => {
+      const allowed = ["Backspace", "Delete", "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", ".", ","];
+      const isNumber = /^[0-9]$/.test(e.key);
+      const isShortcut = e.ctrlKey || e.metaKey;
+      if (!isNumber && !allowed.includes(e.key) && !isShortcut) {
+        e.preventDefault();
+      }
+    });
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    status.textContent = "";
+    status.className = "form-status";
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      status.textContent = "Verifique os campos destacados antes de continuar.";
+      status.classList.add("error");
+      return;
+    }
+
+    const dados = new FormData(form);
+    const registro = Object.fromEntries(dados.entries());
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Salvando...";
+    status.textContent = "Enviando para a planilha...";
+    status.classList.remove("error", "success");
+
+    google.script.run
+      .withSuccessHandler((resposta) => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Registrar atendimento";
+
+        if (resposta && resposta.sucesso) {
+          status.textContent = "Atendimento registrado na planilha com sucesso!";
+          status.classList.add("success");
+          form.reset();
+          toggleIntensidade();
+          intensidadeValor.textContent = "1";
+        } else {
+          status.textContent = "Erro ao salvar: " + (resposta && resposta.erro ? resposta.erro : "tente novamente.");
+          status.classList.add("error");
+        }
+      })
+      .withFailureHandler((erro) => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Registrar atendimento";
+        status.textContent = "Erro ao salvar: " + erro.message;
+        status.classList.add("error");
+      })
+      .registrarAtendimento(registro);
+  });
+
+  form.addEventListener("reset", () => {
+    setTimeout(() => {
+      status.textContent = "";
+      status.className = "form-status";
+      toggleIntensidade();
+      intensidadeValor.textContent = "1";
+    }, 0);
+  });
+});
+</script>
