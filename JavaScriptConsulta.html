@@ -1,0 +1,171 @@
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("numero-busca");
+  const btnBuscar = document.getElementById("btn-buscar");
+  const container = document.getElementById("resultado-container");
+  const toggles = document.querySelectorAll(".category-toggle");
+
+  function iconeSvg(nome) {
+    if (nome === "vazio") {
+      return '<svg width="34" height="34" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><circle cx="20" cy="20" r="12"/><path d="M29 29 L40 40" stroke-linecap="round"/></svg>';
+    }
+    if (nome === "erro") {
+      return '<svg width="34" height="34" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><circle cx="24" cy="24" r="18"/><path d="M24 15 L24 27 M24 33 L24 33.5" stroke-linecap="round"/></svg>';
+    }
+    return "";
+  }
+
+  function escapeHtml(texto) {
+    const div = document.createElement("div");
+    div.textContent = texto === null || texto === undefined ? "" : String(texto);
+    return div.innerHTML;
+  }
+
+  function mostrarEstado(mensagem, tipo) {
+    container.innerHTML =
+      '<div class="result-state' + (tipo === "erro" ? " error" : "") + '">' +
+        iconeSvg(tipo === "erro" ? "erro" : "vazio") +
+        '<p>' + escapeHtml(mensagem) + '</p>' +
+      '</div>';
+  }
+
+  function categoriasSelecionadas() {
+    return Array.from(toggles)
+      .filter((t) => t.checked)
+      .map((t) => t.value);
+  }
+
+  // Pelo menos uma categoria precisa continuar marcada — evita busca vazia
+  toggles.forEach((toggle) => {
+    toggle.addEventListener("change", () => {
+      const marcadas = categoriasSelecionadas();
+      if (marcadas.length === 0) {
+        toggle.checked = true; // impede desmarcar a última categoria
+      }
+    });
+  });
+
+  function renderizarCartaoDeCategoria(categoriaResultado) {
+    const registros = categoriaResultado.registros || [];
+    const grupos = categoriaResultado.grupos || [];
+    const campoTitulo = categoriaResultado.campoTitulo;
+    const rotulo = categoriaResultado.rotulo;
+
+    if (categoriaResultado.avisoAbaInexistente) {
+      return '<div class="result-state"><p>' + escapeHtml(rotulo) +
+        ': ainda não há nenhum registro salvo nesta categoria.</p></div>';
+    }
+
+    if (registros.length === 0) {
+      return '<div class="result-card"><div class="result-card-header"><h2>' +
+        escapeHtml(rotulo) + '</h2></div><div class="result-body">' +
+        '<div class="result-state"><p>Nenhum registro de ' + escapeHtml(rotulo).toLowerCase() +
+        ' encontrado para este número.</p></div></div></div>';
+    }
+
+    // Mostra o mais recente primeiro
+    const ordenados = registros.slice().reverse();
+    let html = "";
+
+    ordenados.forEach((registro) => {
+      const titulo = campoTitulo && registro[campoTitulo] ? registro[campoTitulo] : rotulo;
+      const dataRegistro = registro["Data/Hora do registro"] || "";
+
+      html += '<div class="result-card">';
+      html += '<div class="result-card-header">';
+      html += '<h2>' + escapeHtml(rotulo) + ' — ' + escapeHtml(titulo) + '</h2>';
+      if (dataRegistro) {
+        html += '<span class="result-meta">Registrado em ' + escapeHtml(dataRegistro) + '</span>';
+      }
+      html += '</div>';
+      html += '<div class="result-body">';
+
+      grupos.forEach((grupo) => {
+        html += '<div class="result-group">';
+        html += '<p class="result-group-title">' + escapeHtml(grupo.titulo) + '</p>';
+        html += '<dl class="result-grid">';
+        grupo.campos.forEach((campo) => {
+          const valor = registro[campo];
+          const ehLongo = typeof valor === "string" && valor.length > 60;
+          html += '<div class="result-item' + (ehLongo ? " full-width" : "") + '">';
+          html += '<dt>' + escapeHtml(campo) + '</dt>';
+          html += '<dd>' + escapeHtml(valor) + '</dd>';
+          html += '</div>';
+        });
+        html += '</dl>';
+        html += '</div>';
+      });
+
+      html += '</div></div>';
+    });
+
+    return html;
+  }
+
+  function renderizarResultados(resposta) {
+    const resultados = resposta.resultados || [];
+    const algumComRegistros = resultados.some((r) => (r.registros || []).length > 0);
+
+    if (!algumComRegistros) {
+      mostrarEstado("Nenhum atendimento encontrado com esse número, nas categorias selecionadas.", "vazio");
+      return;
+    }
+
+    let html = "";
+    resultados.forEach((categoriaResultado) => {
+      html += renderizarCartaoDeCategoria(categoriaResultado);
+    });
+
+    container.innerHTML = html;
+  }
+
+  function buscar() {
+    const numero = input.value.trim();
+    const categorias = categoriasSelecionadas();
+
+    if (!numero) {
+      mostrarEstado("Digite um número de atendimento para buscar.", "vazio");
+      input.focus();
+      return;
+    }
+
+    if (categorias.length === 0) {
+      mostrarEstado("Selecione ao menos uma categoria para buscar.", "vazio");
+      return;
+    }
+
+    btnBuscar.disabled = true;
+    btnBuscar.textContent = "Buscando...";
+    mostrarEstado("Buscando atendimento...", "vazio");
+
+    google.script.run
+      .withSuccessHandler((resposta) => {
+        btnBuscar.disabled = false;
+        btnBuscar.textContent = "Buscar";
+
+        if (resposta && resposta.sucesso) {
+          renderizarResultados(resposta);
+        } else {
+          mostrarEstado(resposta && resposta.erro ? resposta.erro : "Não foi possível concluir a busca.", "erro");
+        }
+      })
+      .withFailureHandler((erro) => {
+        btnBuscar.disabled = false;
+        btnBuscar.textContent = "Buscar";
+        mostrarEstado("Erro ao buscar: " + erro.message, "erro");
+      })
+      .buscarDadosPaciente(numero, categorias);
+  }
+
+  btnBuscar.addEventListener("click", buscar);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      buscar();
+    }
+  });
+
+  mostrarEstado("Digite um número de atendimento acima, escolha as categorias e clique em Buscar.", "vazio");
+  input.focus();
+});
+</script>
