@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha de Fisioterapia</title>
+  <?!= include('Stylesheet'); ?>
+</head>
+<body>
+
+  <?!= include('Nav', {baseUrl: baseUrl}); ?>
+
+  <div class="page">
+    <header class="page-header">
+      <div class="header-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="30" height="30">
+          <circle cx="24" cy="10" r="4" fill="none" stroke="currentColor" stroke-width="2.2"/>
+          <path d="M24 14 L24 26 M24 26 L14 40 M24 26 L34 34 M14 20 L24 26 L36 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <p class="eyebrow">Atenção Primária Itinerante</p>
+        <h1>Ficha de Fisioterapia</h1>
+        <p class="subtitle">Os dados são salvos na aba "Fisioterapia" da planilha</p>
+      </div>
+    </header>
+
+    <form id="fisio-form" novalidate>
+
+      <!-- SEÇÃO 1 — IDENTIFICAÇÃO -->
+      <fieldset class="section">
+        <legend><span class="section-index">01</span> Identificação do atendimento</legend>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="numeroAtendimento">Número do atendimento</label>
+            <input type="number" id="numeroAtendimento" name="numeroAtendimento" min="0" inputmode="numeric" placeholder="Nº do atendimento" required>
+          </div>
+
+          <div class="field">
+            <label for="fisioterapeuta">Fisioterapeuta</label>
+            <select id="fisioterapeuta" name="fisioterapeuta" required>
+              <option value="" disabled selected>Selecione</option>
+              <option>Carol</option>
+              <option>Luti</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>O trabalho exige</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="trab-peso" name="trabalhoExige" value="Carregar peso">
+              <label for="trab-peso">Carregar peso</label>
+
+              <input type="checkbox" id="trab-sentado" name="trabalhoExige" value="Permanecer sentado">
+              <label for="trab-sentado">Permanecer sentado</label>
+
+              <input type="checkbox" id="trab-pe" name="trabalhoExige" value="Permanecer em pé">
+              <label for="trab-pe">Permanecer em pé</label>
+
+              <input type="checkbox" id="trab-repetitivo" name="trabalhoExige" value="Movimentos repetitivos">
+              <label for="trab-repetitivo">Movimentos repetitivos</label>
+
+              <input type="checkbox" id="trab-outro" name="trabalhoExige" value="Outro">
+              <label for="trab-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="trabalho-outro-wrapper">
+              <input type="text" id="trabalho-outro-texto" name="trabalhoExigeOutro" placeholder="Descreva a exigência">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="transporte">Principal meio de transporte</label>
+            <select id="transporte" name="transporte">
+              <option value="" disabled selected>Selecione</option>
+              <option>A pé</option>
+              <option>Barco</option>
+              <option>Bicicleta</option>
+              <option>Moto</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="transporte-outro-wrapper">
+              <input type="text" id="transporte-outro-texto" name="transporteOutro" placeholder="Qual outro meio?">
+            </div>
+          </div>
+        </div>
+
+        <!-- Preenchidos automaticamente a partir da Triagem pelo painel de consulta abaixo -->
+        <input type="hidden" id="tipoAtendimento" name="tipoAtendimento">
+        <input type="hidden" id="nome" name="nome">
+      </fieldset>
+
+      <?!= include('ConsultaPaciente', {categoriaAtual: 'fisioterapia'}); ?>
+
+      <!-- SEÇÃO 2 — HDP -->
+      <fieldset class="section">
+        <legend><span class="section-index">02</span> Histórico da doença pregressa (HDP)</legend>
+
+        <div class="region-list">
+          <div class="region-row">
+            <span class="region-label">AVC</span>
+            <div class="segmented" role="radiogroup" aria-label="AVC">
+              <input type="radio" id="avc-sim" name="avc" value="Sim"><label for="avc-sim">Sim</label>
+              <input type="radio" id="avc-nao" name="avc" value="Não"><label for="avc-nao">Não</label>
+              <input type="radio" id="avc-naosabe" name="avc" value="Não sabe"><label for="avc-naosabe">Não sabe</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Hipertensão</span>
+            <div class="segmented" role="radiogroup" aria-label="Hipertensão">
+              <input type="radio" id="hip-sim" name="hipertensao" value="Sim"><label for="hip-sim">Sim</label>
+              <input type="radio" id="hip-nao" name="hipertensao" value="Não"><label for="hip-nao">Não</label>
+              <input type="radio" id="hip-naosabe" name="hipertensao" value="Não sabe"><label for="hip-naosabe">Não sabe</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Diabetes</span>
+            <div class="segmented" role="radiogroup" aria-label="Diabetes">
+              <input type="radio" id="diab-sim" name="diabetes" value="Sim"><label for="diab-sim">Sim</label>
+              <input type="radio" id="diab-nao" name="diabetes" value="Não"><label for="diab-nao">Não</label>
+              <input type="radio" id="diab-naosabe" name="diabetes" value="Não sabe"><label for="diab-naosabe">Não sabe</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Fratura</span>
+            <div class="segmented" role="radiogroup" aria-label="Fratura">
+              <input type="radio" id="frat-sim" name="fratura" value="Sim"><label for="frat-sim">Sim</label>
+              <input type="radio" id="frat-nao" name="fratura" value="Não"><label for="frat-nao">Não</label>
+              <input type="radio" id="frat-naosabe" name="fratura" value="Não sabe"><label for="frat-naosabe">Não sabe</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Cirurgias</span>
+            <div class="segmented" role="radiogroup" aria-label="Cirurgias">
+              <input type="radio" id="cir-sim" name="cirurgias" value="Sim"><label for="cir-sim">Sim</label>
+              <input type="radio" id="cir-nao" name="cirurgias" value="Não"><label for="cir-nao">Não</label>
+              <input type="radio" id="cir-naosabe" name="cirurgias" value="Não sabe"><label for="cir-naosabe">Não sabe</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Gestante</span>
+            <div class="segmented" role="radiogroup" aria-label="Gestante">
+              <input type="radio" id="gest-sim" name="gestante" value="Sim"><label for="gest-sim">Sim</label>
+              <input type="radio" id="gest-nao" name="gestante" value="Não"><label for="gest-nao">Não</label>
+              <input type="radio" id="gest-naosabe" name="gestante" value="Não sabe"><label for="gest-naosabe">Não sabe</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Medicamentos contínuos</span>
+            <div class="segmented" role="radiogroup" aria-label="Medicamentos contínuos">
+              <input type="radio" id="medcont-sim" name="medicamentosContinuos" value="Sim"><label for="medcont-sim">Sim</label>
+              <input type="radio" id="medcont-nao" name="medicamentosContinuos" value="Não"><label for="medcont-nao">Não</label>
+              <input type="radio" id="medcont-naosabe" name="medicamentosContinuos" value="Não sabe"><label for="medcont-naosabe">Não sabe</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 3 — HDA -->
+      <fieldset class="section">
+        <legend><span class="section-index">03</span> Histórico da doença atual (HDA)</legend>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Motivo do atendimento</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="motivo-dor" name="motivoAtendimento" value="Dor"><label for="motivo-dor">Dor</label>
+              <input type="checkbox" id="motivo-caminhar" name="motivoAtendimento" value="Dificuldade para caminhar"><label for="motivo-caminhar">Dificuldade para caminhar</label>
+              <input type="checkbox" id="motivo-fraqueza" name="motivoAtendimento" value="Fraqueza"><label for="motivo-fraqueza">Fraqueza</label>
+              <input type="checkbox" id="motivo-dormencia" name="motivoAtendimento" value="Dormência"><label for="motivo-dormencia">Dormência</label>
+              <input type="checkbox" id="motivo-limitacao" name="motivoAtendimento" value="Limitação de movimento"><label for="motivo-limitacao">Limitação de movimento</label>
+              <input type="checkbox" id="motivo-edema" name="motivoAtendimento" value="Edema"><label for="motivo-edema">Edema</label>
+              <input type="checkbox" id="motivo-queda" name="motivoAtendimento" value="Queda"><label for="motivo-queda">Queda</label>
+              <input type="checkbox" id="motivo-preventiva" name="motivoAtendimento" value="Orientação preventiva"><label for="motivo-preventiva">Orientação preventiva</label>
+              <input type="checkbox" id="motivo-outro" name="motivoAtendimento" value="Outro"><label for="motivo-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="motivo-outro-wrapper">
+              <input type="text" id="motivo-outro-texto" name="motivoAtendimentoOutro" placeholder="Qual outro motivo?">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="inicioSintomas">Início dos sintomas</label>
+            <select id="inicioSintomas" name="inicioSintomas">
+              <option value="" disabled selected>Selecione</option>
+              <option>Hoje</option>
+              <option>Dias</option>
+              <option>Semana</option>
+              <option>Meses</option>
+              <option>Anos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="comoComecou">Como começou os sintomas</label>
+            <textarea id="comoComecou" name="comoComecou" rows="2" placeholder="Descreva como os sintomas começaram"></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Piora com</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="piora-caminhar" name="pioraCom" value="Caminhar"><label for="piora-caminhar">Caminhar</label>
+              <input type="checkbox" id="piora-trabalhar" name="pioraCom" value="Trabalhar"><label for="piora-trabalhar">Trabalhar</label>
+              <input type="checkbox" id="piora-peso" name="pioraCom" value="Levantar peso"><label for="piora-peso">Levantar peso</label>
+              <input type="checkbox" id="piora-sentado" name="pioraCom" value="Permanecer sentado"><label for="piora-sentado">Permanecer sentado</label>
+              <input type="checkbox" id="piora-pe" name="pioraCom" value="Permanecer em pé"><label for="piora-pe">Permanecer em pé</label>
+              <input type="checkbox" id="piora-deitado" name="pioraCom" value="Dormindo/Deitado"><label for="piora-deitado">Dormindo/Deitado</label>
+              <input type="checkbox" id="piora-outro" name="pioraCom" value="Outro"><label for="piora-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="piora-outro-wrapper">
+              <input type="text" id="piora-outro-texto" name="pioraComOutro" placeholder="Piora com o quê?">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Melhora com</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="melhora-repouso" name="melhoraCom" value="Repouso"><label for="melhora-repouso">Repouso</label>
+              <input type="checkbox" id="melhora-movimento" name="melhoraCom" value="Movimento"><label for="melhora-movimento">Movimento</label>
+              <input type="checkbox" id="melhora-medicamento" name="melhoraCom" value="Medicamento"><label for="melhora-medicamento">Medicamento</label>
+              <input type="checkbox" id="melhora-outro" name="melhoraCom" value="Outro"><label for="melhora-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="melhora-outro-wrapper">
+              <input type="text" id="melhora-outro-texto" name="melhoraComOutro" placeholder="Melhora com o quê?">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 4 — AVALIAÇÃO DA DOR -->
+      <fieldset class="section">
+        <legend><span class="section-index">04</span> Avaliação da dor</legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="escalaDor">Escala da dor (EVN) <span class="unit">0 a 10</span></label>
+            <div class="range-field">
+              <input type="range" id="escalaDor" name="escalaDor" min="0" max="10" step="1" value="0">
+              <output id="escalaDor-valor" for="escalaDor">0</output>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Características da dor</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="carac-pontada" name="caracteristicasDor" value="Pontada">
+              <label for="carac-pontada">Pontada</label>
+              <input type="checkbox" id="carac-fisgada" name="caracteristicasDor" value="Fisgada">
+              <label for="carac-fisgada">Fisgada</label>
+              <input type="checkbox" id="carac-queimacao" name="caracteristicasDor" value="Queimação">
+              <label for="carac-queimacao">Queimação</label>
+              <input type="checkbox" id="carac-peso" name="caracteristicasDor" value="Peso">
+              <label for="carac-peso">Peso</label>
+              <input type="checkbox" id="carac-formigamento" name="caracteristicasDor" value="Formigamento">
+              <label for="carac-formigamento">Formigamento</label>
+              <input type="checkbox" id="carac-outro" name="caracteristicasDor" value="Outro">
+              <label for="carac-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="caracteristica-outro-wrapper">
+              <input type="text" id="caracteristica-outro-texto" name="caracteristicasDorOutro" placeholder="Descreva a característica">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Local da dor</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="local-cabeca" name="localDor" value="Cabeça"><label for="local-cabeca">Cabeça</label>
+              <input type="checkbox" id="local-pescoco" name="localDor" value="Pescoço"><label for="local-pescoco">Pescoço</label>
+              <input type="checkbox" id="local-peito" name="localDor" value="Peito"><label for="local-peito">Peito</label>
+              <input type="checkbox" id="local-abdomen" name="localDor" value="Abdômen"><label for="local-abdomen">Abdômen</label>
+              <input type="checkbox" id="local-ombros" name="localDor" value="Ombros"><label for="local-ombros">Ombros</label>
+              <input type="checkbox" id="local-bracos" name="localDor" value="Braços"><label for="local-bracos">Braços</label>
+              <input type="checkbox" id="local-maos" name="localDor" value="Mãos"><label for="local-maos">Mãos</label>
+              <input type="checkbox" id="local-costas" name="localDor" value="Costas (parte superior)"><label for="local-costas">Costas (parte superior)</label>
+              <input type="checkbox" id="local-lombar" name="localDor" value="Lombar"><label for="local-lombar">Lombar</label>
+              <input type="checkbox" id="local-quadril" name="localDor" value="Quadril"><label for="local-quadril">Quadril</label>
+              <input type="checkbox" id="local-joelhos" name="localDor" value="Joelhos"><label for="local-joelhos">Joelhos</label>
+              <input type="checkbox" id="local-pernas" name="localDor" value="Pernas"><label for="local-pernas">Pernas</label>
+              <input type="checkbox" id="local-pes" name="localDor" value="Pés"><label for="local-pes">Pés</label>
+              <input type="checkbox" id="local-outro" name="localDor" value="Outro"><label for="local-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="local-outro-wrapper">
+              <input type="text" id="local-outro-texto" name="localDorOutro" placeholder="Descreva o local">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="dorImpede">A dor impede</label>
+            <select id="dorImpede" name="dorImpede">
+              <option value="" disabled selected>Selecione</option>
+              <option>Trabalhar</option>
+              <option>Cuidar da casa</option>
+              <option>Caminhar</option>
+              <option>Pescar</option>
+              <option>Dormir</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="dorimpede-outro-wrapper">
+              <input type="text" id="dorimpede-outro-texto" name="dorImpedeOutro" placeholder="A dor impede o quê?">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 5 — AVALIAÇÃO DA ESPECIALIDADE -->
+      <fieldset class="section">
+        <legend><span class="section-index">05</span> Avaliação da especialidade</legend>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="postura">Postura</label>
+            <select id="postura" name="postura">
+              <option value="" disabled selected>Selecione</option>
+              <option>Sem alterações</option>
+              <option>Alterada</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="postura-outro-wrapper">
+              <input type="text" id="postura-outro-texto" name="posturaOutro" placeholder="Descreva a alteração postural">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="marcha">Marcha</label>
+            <select id="marcha" name="marcha">
+              <option value="" disabled selected>Selecione</option>
+              <option>Independente</option>
+              <option>Claudicante</option>
+              <option>Auxílio</option>
+              <option>Não deambula</option>
+              <option>Outro</option>
+            </select>
+            <div class="outro-field hidden" id="marcha-outro-wrapper">
+              <input type="text" id="marcha-outro-texto" name="marchaOutro" placeholder="Descreva a marcha">
+            </div>
+          </div>
+        </div>
+
+        <p class="subsection-title">Amplitude de movimento</p>
+        <div class="region-list">
+          <div class="region-row">
+            <span class="region-label">Coluna cervical</span>
+            <div class="segmented" role="radiogroup" aria-label="Amplitude coluna cervical">
+              <input type="radio" id="amp-cervical-pres" name="amplitudeCervical" value="Preservada"><label for="amp-cervical-pres">Preservada</label>
+              <input type="radio" id="amp-cervical-lim" name="amplitudeCervical" value="Limitada"><label for="amp-cervical-lim">Limitada</label>
+              <input type="radio" id="amp-cervical-dor" name="amplitudeCervical" value="Dolorosa"><label for="amp-cervical-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Ombro</span>
+            <div class="segmented" role="radiogroup" aria-label="Amplitude ombro">
+              <input type="radio" id="amp-ombro-pres" name="amplitudeOmbro" value="Preservada"><label for="amp-ombro-pres">Preservada</label>
+              <input type="radio" id="amp-ombro-lim" name="amplitudeOmbro" value="Limitada"><label for="amp-ombro-lim">Limitada</label>
+              <input type="radio" id="amp-ombro-dor" name="amplitudeOmbro" value="Dolorosa"><label for="amp-ombro-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Cotovelo</span>
+            <div class="segmented" role="radiogroup" aria-label="Amplitude cotovelo">
+              <input type="radio" id="amp-cotovelo-pres" name="amplitudeCotovelo" value="Preservada"><label for="amp-cotovelo-pres">Preservada</label>
+              <input type="radio" id="amp-cotovelo-lim" name="amplitudeCotovelo" value="Limitada"><label for="amp-cotovelo-lim">Limitada</label>
+              <input type="radio" id="amp-cotovelo-dor" name="amplitudeCotovelo" value="Dolorosa"><label for="amp-cotovelo-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Punho/mão</span>
+            <div class="segmented" role="radiogroup" aria-label="Amplitude punho/mão">
+              <input type="radio" id="amp-punho-pres" name="amplitudePunhoMao" value="Preservada"><label for="amp-punho-pres">Preservada</label>
+              <input type="radio" id="amp-punho-lim" name="amplitudePunhoMao" value="Limitada"><label for="amp-punho-lim">Limitada</label>
+              <input type="radio" id="amp-punho-dor" name="amplitudePunhoMao" value="Dolorosa"><label for="amp-punho-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Coluna Torácica</span>
+            <div class="segmented" role="radiogroup" aria-label="Amplitude coluna torácica">
+              <input type="radio" id="amp-toracica-pres" name="amplitudeToracica" value="Preservada"><label for="amp-toracica-pres">Preservada</label>
+              <input type="radio" id="amp-toracica-lim" name="amplitudeToracica" value="Limitada"><label for="amp-toracica-lim">Limitada</label>
+              <input type="radio" id="amp-toracica-dor" name="amplitudeToracica" value="Dolorosa"><label for="amp-toracica-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Coluna Lombar</span>
+            <div class="segmented" role="radiogroup" aria-label="Amplitude coluna lombar">
+              <input type="radio" id="amp-lombar-pres" name="amplitudeLombar" value="Preservada"><label for="amp-lombar-pres">Preservada</label>
+              <input type="radio" id="amp-lombar-lim" name="amplitudeLombar" value="Limitada"><label for="amp-lombar-lim">Limitada</label>
+              <input type="radio" id="amp-lombar-dor" name="amplitudeLombar" value="Dolorosa"><label for="amp-lombar-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Quadril</span>
+            <div class="segmented" role="radiogroup" aria-label="Amplitude quadril">
+              <input type="radio" id="amp-quadril-pres" name="amplitudeQuadril" value="Preservada"><label for="amp-quadril-pres">Preservada</label>
+              <input type="radio" id="amp-quadril-lim" name="amplitudeQuadril" value="Limitada"><label for="amp-quadril-lim">Limitada</label>
+              <input type="radio" id="amp-quadril-dor" name="amplitudeQuadril" value="Dolorosa"><label for="amp-quadril-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Joelho</span>
+            <div class="segmented" role="radiogroup" aria-label="Amplitude joelho">
+              <input type="radio" id="amp-joelho-pres" name="amplitudeJoelho" value="Preservada"><label for="amp-joelho-pres">Preservada</label>
+              <input type="radio" id="amp-joelho-lim" name="amplitudeJoelho" value="Limitada"><label for="amp-joelho-lim">Limitada</label>
+              <input type="radio" id="amp-joelho-dor" name="amplitudeJoelho" value="Dolorosa"><label for="amp-joelho-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Tornozelo/Pé</span>
+            <div class="segmented" role="radiogroup" aria-label="Amplitude tornozelo/pé">
+              <input type="radio" id="amp-tornozelo-pres" name="amplitudeTornozeloPe" value="Preservada"><label for="amp-tornozelo-pres">Preservada</label>
+              <input type="radio" id="amp-tornozelo-lim" name="amplitudeTornozeloPe" value="Limitada"><label for="amp-tornozelo-lim">Limitada</label>
+              <input type="radio" id="amp-tornozelo-dor" name="amplitudeTornozeloPe" value="Dolorosa"><label for="amp-tornozelo-dor">Dolorosa</label>
+            </div>
+          </div>
+        </div>
+
+        <p class="subsection-title">Força muscular</p>
+        <div class="region-list">
+          <div class="region-row">
+            <span class="region-label">Coluna cervical</span>
+            <div class="segmented" role="radiogroup" aria-label="Força coluna cervical">
+              <input type="radio" id="forca-cervical-pres" name="forcaCervical" value="Preservada"><label for="forca-cervical-pres">Preservada</label>
+              <input type="radio" id="forca-cervical-lim" name="forcaCervical" value="Limitada"><label for="forca-cervical-lim">Limitada</label>
+              <input type="radio" id="forca-cervical-dor" name="forcaCervical" value="Dolorosa"><label for="forca-cervical-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Ombro</span>
+            <div class="segmented" role="radiogroup" aria-label="Força ombro">
+              <input type="radio" id="forca-ombro-pres" name="forcaOmbro" value="Preservada"><label for="forca-ombro-pres">Preservada</label>
+              <input type="radio" id="forca-ombro-lim" name="forcaOmbro" value="Limitada"><label for="forca-ombro-lim">Limitada</label>
+              <input type="radio" id="forca-ombro-dor" name="forcaOmbro" value="Dolorosa"><label for="forca-ombro-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Cotovelo</span>
+            <div class="segmented" role="radiogroup" aria-label="Força cotovelo">
+              <input type="radio" id="forca-cotovelo-pres" name="forcaCotovelo" value="Preservada"><label for="forca-cotovelo-pres">Preservada</label>
+              <input type="radio" id="forca-cotovelo-lim" name="forcaCotovelo" value="Limitada"><label for="forca-cotovelo-lim">Limitada</label>
+              <input type="radio" id="forca-cotovelo-dor" name="forcaCotovelo" value="Dolorosa"><label for="forca-cotovelo-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Punho/Mão</span>
+            <div class="segmented" role="radiogroup" aria-label="Força punho/mão">
+              <input type="radio" id="forca-punho-pres" name="forcaPunhoMao" value="Preservada"><label for="forca-punho-pres">Preservada</label>
+              <input type="radio" id="forca-punho-lim" name="forcaPunhoMao" value="Limitada"><label for="forca-punho-lim">Limitada</label>
+              <input type="radio" id="forca-punho-dor" name="forcaPunhoMao" value="Dolorosa"><label for="forca-punho-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Coluna Torácica</span>
+            <div class="segmented" role="radiogroup" aria-label="Força coluna torácica">
+              <input type="radio" id="forca-toracica-pres" name="forcaToracica" value="Preservada"><label for="forca-toracica-pres">Preservada</label>
+              <input type="radio" id="forca-toracica-lim" name="forcaToracica" value="Limitada"><label for="forca-toracica-lim">Limitada</label>
+              <input type="radio" id="forca-toracica-dor" name="forcaToracica" value="Dolorosa"><label for="forca-toracica-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Coluna Lombar</span>
+            <div class="segmented" role="radiogroup" aria-label="Força coluna lombar">
+              <input type="radio" id="forca-lombar-pres" name="forcaLombar" value="Preservada"><label for="forca-lombar-pres">Preservada</label>
+              <input type="radio" id="forca-lombar-lim" name="forcaLombar" value="Limitada"><label for="forca-lombar-lim">Limitada</label>
+              <input type="radio" id="forca-lombar-dor" name="forcaLombar" value="Dolorosa"><label for="forca-lombar-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Joelho</span>
+            <div class="segmented" role="radiogroup" aria-label="Força joelho">
+              <input type="radio" id="forca-joelho-pres" name="forcaJoelho" value="Preservada"><label for="forca-joelho-pres">Preservada</label>
+              <input type="radio" id="forca-joelho-lim" name="forcaJoelho" value="Limitada"><label for="forca-joelho-lim">Limitada</label>
+              <input type="radio" id="forca-joelho-dor" name="forcaJoelho" value="Dolorosa"><label for="forca-joelho-dor">Dolorosa</label>
+            </div>
+          </div>
+          <div class="region-row">
+            <span class="region-label">Tornozelo/Pé</span>
+            <div class="segmented" role="radiogroup" aria-label="Força tornozelo/pé">
+              <input type="radio" id="forca-tornozelo-pres" name="forcaTornozeloPe" value="Preservada"><label for="forca-tornozelo-pres">Preservada</label>
+              <input type="radio" id="forca-tornozelo-lim" name="forcaTornozeloPe" value="Limitada"><label for="forca-tornozelo-lim">Limitada</label>
+              <input type="radio" id="forca-tornozelo-dor" name="forcaTornozeloPe" value="Dolorosa"><label for="forca-tornozelo-dor">Dolorosa</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label>Sensibilidade</label>
+            <div class="segmented" role="radiogroup" aria-label="Sensibilidade">
+              <input type="radio" id="sensib-preservada" name="sensibilidade" value="Preservada"><label for="sensib-preservada">Preservada</label>
+              <input type="radio" id="sensib-alterada" name="sensibilidade" value="Alterada"><label for="sensib-alterada">Alterada</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Equilíbrio</label>
+            <div class="segmented" role="radiogroup" aria-label="Equilíbrio">
+              <input type="radio" id="equilibrio-adequado" name="equilibrio" value="Adequado"><label for="equilibrio-adequado">Adequado</label>
+              <input type="radio" id="equilibrio-alterado" name="equilibrio" value="Alterado"><label for="equilibrio-alterado">Alterado</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Edema</label>
+            <div class="segmented" role="radiogroup" aria-label="Edema">
+              <input type="radio" id="edema-sim" name="edema" value="Sim"><label for="edema-sim">Sim</label>
+              <input type="radio" id="edema-nao" name="edema" value="Não"><label for="edema-nao">Não</label>
+            </div>
+          </div>
+          <div class="outro-field hidden" id="edema-local-wrapper">
+            <div class="field">
+              <label for="localEdema">Local do edema</label>
+              <input type="text" id="localEdema" name="localEdema" placeholder="Onde está o edema?">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- SEÇÃO 6 — CONCLUSÃO -->
+      <fieldset class="section">
+        <legend><span class="section-index">06</span> Conclusão de atendimento</legend>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="diagnosticoCinetico">Diagnóstico Cinético-funcional</label>
+            <textarea id="diagnosticoCinetico" name="diagnosticoCinetico" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="hipoteseFisioterapeutica">Hipótese fisioterapêutica</label>
+            <textarea id="hipoteseFisioterapeutica" name="hipoteseFisioterapeutica" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Conduta realizada</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="cond-alongamentos" name="condutaRealizada" value="Alongamentos"><label for="cond-alongamentos">Alongamentos</label>
+              <input type="checkbox" id="cond-mobilizacao" name="condutaRealizada" value="Mobilização"><label for="cond-mobilizacao">Mobilização</label>
+              <input type="checkbox" id="cond-terapiamanual" name="condutaRealizada" value="Terapia manual"><label for="cond-terapiamanual">Terapia manual</label>
+              <input type="checkbox" id="cond-reforco" name="condutaRealizada" value="Reforço muscular"><label for="cond-reforco">Reforço muscular</label>
+              <input type="checkbox" id="cond-respiratorios" name="condutaRealizada" value="Exercícios respiratórios"><label for="cond-respiratorios">Exercícios respiratórios</label>
+              <input type="checkbox" id="cond-marcha" name="condutaRealizada" value="Treino de marcha"><label for="cond-marcha">Treino de marcha</label>
+              <input type="checkbox" id="cond-equilibrio" name="condutaRealizada" value="Treino de equilíbrio"><label for="cond-equilibrio">Treino de equilíbrio</label>
+              <input type="checkbox" id="cond-educacao" name="condutaRealizada" value="Educação em saúde"><label for="cond-educacao">Educação em saúde</label>
+              <input type="checkbox" id="cond-outro" name="condutaRealizada" value="Outro"><label for="cond-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="conduta-outro-wrapper">
+              <input type="text" id="conduta-outro-texto" name="condutaRealizadaOutro" placeholder="Descreva a outra conduta">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Encaminhamento</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="enc-naonecessario" name="encaminhamento" value="Não necessário"><label for="enc-naonecessario">Não necessário</label>
+              <input type="checkbox" id="enc-medico" name="encaminhamento" value="Médico"><label for="enc-medico">Médico</label>
+              <input type="checkbox" id="enc-enfermagem" name="encaminhamento" value="Enfermagem"><label for="enc-enfermagem">Enfermagem</label>
+              <input type="checkbox" id="enc-psicologia" name="encaminhamento" value="Psicologia"><label for="enc-psicologia">Psicologia</label>
+              <input type="checkbox" id="enc-odontologia" name="encaminhamento" value="Odontologia"><label for="enc-odontologia">Odontologia</label>
+              <input type="checkbox" id="enc-outro" name="encaminhamento" value="Outro"><label for="enc-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="encaminhamento-outro-wrapper">
+              <input type="text" id="encaminhamento-outro-texto" name="encaminhamentoOutro" placeholder="Encaminhar para onde?">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label>Orientações domiciliares</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="orient-ativo" name="orientacoesDomiciliares" value="Manter-se ativo(a)"><label for="orient-ativo">Manter-se ativo(a)</label>
+              <input type="checkbox" id="orient-caminhada" name="orientacoesDomiciliares" value="Caminhada"><label for="orient-caminhada">Caminhada</label>
+              <input type="checkbox" id="orient-alongamentos" name="orientacoesDomiciliares" value="Alongamentos"><label for="orient-alongamentos">Alongamentos</label>
+              <input type="checkbox" id="orient-exercicios" name="orientacoesDomiciliares" value="Exercícios orientados"><label for="orient-exercicios">Exercícios orientados</label>
+              <input type="checkbox" id="orient-ubs" name="orientacoesDomiciliares" value="Procurar UBS"><label for="orient-ubs">Procurar UBS</label>
+              <input type="checkbox" id="orient-outro" name="orientacoesDomiciliares" value="Outro"><label for="orient-outro">Outro</label>
+            </div>
+            <div class="outro-field hidden" id="orientacoes-outro-wrapper">
+              <input type="text" id="orientacoes-outro-texto" name="orientacoesDomiciliaresOutro" placeholder="Descreva a outra orientação">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="field">
+            <label for="observacoes">Observações</label>
+            <textarea id="observacoes" name="observacoes" rows="3" placeholder="Observações adicionais"></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        <div class="buttons">
+          <button type="reset" class="btn btn-ghost">Limpar</button>
+          <button type="submit" class="btn btn-primary">Registrar fisioterapia</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <?!= include('JavaScriptConsultaPaciente'); ?>
+  <?!= include('JavaScriptFisioterapia'); ?>
+</body>
+</html>
