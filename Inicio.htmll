@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atendimento Comunitário</title>
+  <?!= include('Stylesheet'); ?>
+</head>
+<body>
+
+  <?!= include('Nav', {baseUrl: baseUrl}); ?>
+
+  <div class="page">
+    <header class="page-header">
+      <div class="header-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="30" height="30">
+          <path d="M24 4 C24 4 8 16 8 28 C8 37 15.2 44 24 44 C32.8 44 40 37 40 28 C40 16 24 4 24 4 Z" fill="none" stroke="currentColor" stroke-width="2.4"/>
+          <path d="M24 16 L24 32 M16 24 L32 24" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <p class="eyebrow">Atenção Primária Itinerante</p>
+        <h1>Atendimento Comunitário</h1>
+        <p class="subtitle">Escolha um formulário para registrar, ou busque os dados de um paciente já atendido</p>
+      </div>
+    </header>
+
+    <div class="hub-grid">
+      <a class="hub-card" href="<?= baseUrl ?>?page=triagem" id="hub-triagem" target="_blank" rel="noopener">
+        <div class="hub-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <h3>Triagem</h3>
+        <p>Identificação, dados do paciente e sinais vitais no primeiro atendimento.</p>
+      </a>
+
+      <a class="hub-card" href="<?= baseUrl ?>?page=exames" id="hub-exames" target="_blank" rel="noopener">
+        <div class="hub-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6l-6 12a2 2 0 0 0 2 3h14a2 2 0 0 0 2-3L15 8V2"/><path d="M9 2h6 M8 15h8"/></svg>
+        </div>
+        <h3>Exames</h3>
+        <p>Testes rápidos, hemograma e EQU, com seções que se ajustam ao exame solicitado.</p>
+      </a>
+
+      <a class="hub-card" href="<?= baseUrl ?>?page=anamnese" id="hub-anamnese" target="_blank" rel="noopener">
+        <div class="hub-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8 M8 12h8 M8 16h5"/></svg>
+        </div>
+        <h3>Consulta</h3>
+        <p>Anamnese, hábitos de vida, avaliação médica e condições de moradia.</p>
+      </a>
+
+      <a class="hub-card" href="<?= baseUrl ?>?page=fisioterapia" id="hub-fisioterapia" target="_blank" rel="noopener">
+        <div class="hub-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2.5"/><path d="M12 7.5v6 M12 13.5l-5 7 M12 13.5l5.5 4 M7 10l5 3.5 6-4"/></svg>
+        </div>
+        <h3>Fisioterapia</h3>
+        <p>Avaliação funcional, amplitude de movimento, força muscular e conduta.</p>
+      </a>
+    </div>
+
+    <div class="hub-grid" style="margin-top: 16px;">
+      <a class="hub-card" href="<?= baseUrl ?>?page=consulta" id="hub-consulta" target="_blank" rel="noopener" style="grid-column: 1 / -1;">
+        <div class="hub-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </div>
+        <h3>Buscar paciente</h3>
+        <p>Consulte pelo número do atendimento e escolha quais categorias de dados exibir — Triagem, Exames, Consulta e/ou Fisioterapia.</p>
+      </a>
+    </div>
+
+    <footer class="page-footer">Os dados preenchidos aqui são salvos automaticamente na planilha do Google Sheets configurada para este Web App.</footer>
+  </div>
+
+</body>
+</html>
